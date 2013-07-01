@@ -5,10 +5,10 @@ app.use(express.logger());
 
 app.get('/', function(req, res) {
   res.send('Hello World!');
-  res.send(codwallup());
+  res.send(getForecast());
 });
 
-var codwallup = function () {
+var getForecast = function () {
 	var forecastbase = "https://api.forecast.io/forecast/";
 	var key = "91ac025a6fe778dbe3a41cf7748b55d1";
 	// var opts = "/43.654,-79.423,1370495580?units=ca";
