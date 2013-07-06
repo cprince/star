@@ -8,7 +8,7 @@ var exec = require('child_process').exec,
     child;
 
 
-var sendMail = function () {
+var checkAndSend = function () {
     console.log("in sendMail");
     child = exec('echo "This will" | mail -s "Hello nodejs" col@colinprince.com',
       function (error, stdout, stderr) {
@@ -20,17 +20,17 @@ var sendMail = function () {
     });
 }
 
-var timeout = setInterval(sendMail, 20*1000);
+var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
-app.get('/rain/:lat,:long', function(req, response) {
+app.get('/rain/:lat,:lng', function(req, response) {
     console.log('lat',req.param('lat'));
-    console.log('long',req.param('long'));
+    console.log('lng',req.param('lng'));
     // response.send(getForecast(response));
-    getForecast(response);
+    getForecast(response, lat, lng);
 });
 
 app.get('/', function(req, response) {
-    response.send('<p>Welcome to the rain predictor</p><p>example:</p><p><a href="/rain/47,-23">/rain/:lat,:long</a></p>');
+    response.send('<p>Welcome to the rain predictor</p><p>example:</p><p><a href="/rain/47,-23">/rain/:lat,:lng</a></p>');
 });
 
 var getForecast = function (response) {
