@@ -17,7 +17,7 @@ var checkAndSend = function () {
     });
 }
 
-var timeoutId = setInterval(checkAndSend, 10*60*1000);
+var timeoutId = setInterval(checkAndSend, 60*60*1000);
 
 /* =============================================== */
 
@@ -50,7 +50,7 @@ var getForecast = function (response, lat, lng) {
     request(requrl, function (error, responseRR, body) {
       if (!error && responseRR.statusCode == 200) {
         var details = JSON.parse(body);
-        console.log("in f request", details.latitude);
+        console.log("currently.precipIntensity", details.currently.precipIntensity);
         var raining = false;
         if (details.currently.precipIntensity > 0) {
             raining = true;
