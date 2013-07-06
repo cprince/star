@@ -3,6 +3,25 @@ var request = require("request");
 var app = express();
 app.use(express.logger());
 
+
+var exec = require('child_process').exec,
+    child;
+
+
+var sendMail = function () {
+    console.log("in sendMail");
+    child = exec('echo "This will" | mail -s "Hello nodejs" col@colinprince.com',
+      function (error, stdout, stderr) {
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+    });
+}
+
+var timeout = setInterval(sendMail, 20*1000);
+
 app.get('/rain/:lat,:long', function(req, response) {
     console.log('lat',req.param('lat'));
     console.log('long',req.param('long'));
