@@ -2,11 +2,8 @@ var express = require("express");
 var request = require("request");
 var app = express();
 app.use(express.logger());
-
-
 var exec = require('child_process').exec,
     child;
-
 
 var checkAndSend = function () {
     console.log("in sendMail");
@@ -22,24 +19,29 @@ var checkAndSend = function () {
 
 var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
+/* =============================================== */
+
 app.get('/rain/:lat,:lng', function(req, response) {
-    console.log('lat',req.param('lat'));
-    console.log('lng',req.param('lng'));
-    // response.send(getForecast(response));
+    var lat = req.param('lat'),
+        lng = req.param('lng');
+
+    console.log('lat',lat);
+    console.log('lng',lng);
     getForecast(response, lat, lng);
 });
 
 app.get('/', function(req, response) {
-    response.send('<p>Welcome to the rain predictor</p><p>example:</p><p><a href="/rain/47,-23">/rain/:lat,:lng</a></p>');
+    response.send('<p>Welcome to the rain predictor</p><p>example:</p><p><a href="/rain/44,-78">/rain/:lat,:lng</a></p>');
 });
 
-var getForecast = function (response) {
+var getForecast = function (response, lat, lng) {
     var forecastbase = "https://api.forecast.io/forecast/";
     var key = "91ac025a6fe778dbe3a41cf7748b55d1";
     // Windsorish 41.919012,-83.387947
     // var opts = "/43.654,-79.423,1370495580?units=ca";
     // var opts = "/43.654,-79.423?units=ca";
-    var opts = "/41.919012,-83.387947,1372708360?units=ca";
+    // var opts = "/41.919012,-83.387947,1372708360?units=ca";
+    var opts = "/" + lat + "," + lng + ",1372708360?units=ca";
 
     var requrl = forecastbase + key + opts;
 
