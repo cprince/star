@@ -7,7 +7,7 @@ var exec = require('child_process').exec,
 
 var checkAndSend = function () {
     console.log("in sendMail");
-    child = exec('echo "This will" | mail -s "Hello nodejs" col@colinprince.com',
+    child = exec('echo "This will be an alert" | mail -s "Hello nodejs" yl1984108@gmail.com',
       function (error, stdout, stderr) {
         console.log('stdout: ' + stdout);
         console.log('stderr: ' + stderr);
@@ -17,7 +17,7 @@ var checkAndSend = function () {
     });
 }
 
-var timeoutId = setInterval(checkAndSend, 60*60*1000);
+var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
 /* =============================================== */
 
