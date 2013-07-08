@@ -58,14 +58,15 @@ var checkrain = function (lat, lng) {
         deferred.reject("oops something didn't work");
       }
     })
-
     return deferred.promise;
-
 };
 
-checkrain(43.654,-79.423).then(function(value){
-    console.log("woo",value);
-});
+checkrain(43.654,-79.423).then( function(value){
+                                    console.log("woo",value);
+                                },
+                                function(errormsg){
+                                    console.log("error", errormsg);
+                                });
 
 console.log("between");
 
