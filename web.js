@@ -8,13 +8,15 @@ var exec = require('child_process').exec,
 
 var checkAndSend = function () {
     console.log("in sendMail");
-    child = exec('echo "This will be an alert" | mail -s "Hello nodejs" col@colinprince.com',
-      function (error, stdout, stderr) {
-        console.log('stdout: ' + stdout);
-        console.log('stderr: ' + stderr);
-        if (error !== null) {
-          console.log('exec error: ' + error);
-        }
+    checkrain(43.654,-79.423).then(function(value){
+        child = exec('echo "This will be an alert" | mail -s "Hello nodejs" col@colinprince.com',
+          function (error, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+              console.log('exec error: ' + error);
+            }
+        });
     });
 }
 
@@ -61,11 +63,8 @@ var checkrain = function (lat, lng) {
     return deferred.promise;
 };
 
-checkrain(43.654,-79.423).then( function(value){
+checkrain(43.654,-79.423).then(function(value){
                                     console.log("woo",value);
-                                },
-                                function(errormsg){
-                                    console.log("error", errormsg);
                                 });
 
 console.log("between");
