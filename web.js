@@ -11,7 +11,7 @@ var checkAndSend = function () {
     checkrain(43.654,-79.423).then(function(value){
         var subject = '"[wpush] no rain"';
         if (value.raining) subject = '"[wpush] it is RAINING"';
-        var body = '"This will be an alert"';
+        var body = JSON.stringify(value);
         child = exec('echo ' + body + ' | mail -s ' + subject + ' col@colinprince.com',
           function (error, stdout, stderr) {
             console.log('stdout: ' + stdout);
@@ -65,16 +65,6 @@ var checkrain = function (lat, lng) {
     })
     return deferred.promise;
 };
-
-checkrain(43.654,-79.423).then(function(value){
-                                    console.log("woo",value);
-                                });
-
-console.log("between");
-
-checkrain(0,0).then(function(value){
-    console.log("woo",value);
-});
 
 
 var getForecast = function (response, lat, lng) {
