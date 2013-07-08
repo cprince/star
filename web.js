@@ -34,7 +34,7 @@ app.get('/rain/:lat,:lng', function(req, response) {
 
     console.log('lat',lat);
     console.log('lng',lng);
-    checkRain(43.654,-79.423).then(function(value){
+    checkRain(lat,lng).then(function(value){
         response.json(value);
     });
 });
