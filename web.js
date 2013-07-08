@@ -8,10 +8,11 @@ var exec = require('child_process').exec,
 
 var checkAndSend = function () {
     console.log("in sendMail");
-    checkrain(43.654,-79.423).then(function(value){
+    checkRain(43.654,-79.423).then(function(value){
         var subject = '"[wpush] no rain"';
         if (value.raining) subject = '"[wpush] it is RAINING"';
         var body = JSON.stringify(value);
+        console.log(body);
         child = exec('echo ' + body + ' | mail -s ' + subject + ' col@colinprince.com',
           function (error, stdout, stderr) {
             console.log('stdout: ' + stdout);
@@ -33,17 +34,23 @@ app.get('/rain/:lat,:lng', function(req, response) {
 
     console.log('lat',lat);
     console.log('lng',lng);
-    getForecast(response, lat, lng);
+    checkRain(43.654,-79.423).then(function(value){
+        response.json(value);
+    });
 });
 
 app.get('/', function(req, response) {
     response.send('<p>Welcome to the rain predictor</p><p>example:</p><p><a href="/rain/44,-78">/rain/:lat,:lng</a></p>');
 });
 
-var checkrain = function (lat, lng) {
+var checkRain = function (lat, lng) {
     var deferred = q.defer();
     var forecastbase = "https://api.forecast.io/forecast/";
     var key = "91ac025a6fe778dbe3a41cf7748b55d1";
+    // Windsorish 41.919012,-83.387947
+    // var opts = "/43.654,-79.423,1370495580?units=ca";
+    // var opts = "/43.654,-79.423?units=ca";
+    // var opts = "/41.919012,-83.387947,1372708360?units=ca";
     var opts = "/" + lat + "," + lng + "?units=ca";
 
     var requrl = forecastbase + key + opts;
@@ -66,36 +73,6 @@ var checkrain = function (lat, lng) {
     return deferred.promise;
 };
 
-
-var getForecast = function (response, lat, lng) {
-    var forecastbase = "https://api.forecast.io/forecast/";
-    var key = "91ac025a6fe778dbe3a41cf7748b55d1";
-    // Windsorish 41.919012,-83.387947
-    // var opts = "/43.654,-79.423,1370495580?units=ca";
-    // var opts = "/43.654,-79.423?units=ca";
-    // var opts = "/41.919012,-83.387947,1372708360?units=ca";
-    var opts = "/" + lat + "," + lng + ",1372708360?units=ca";
-
-    var requrl = forecastbase + key + opts;
-
-    console.log("requrl",requrl);
-
-    request(requrl, function (error, responseRR, body) {
-      if (!error && responseRR.statusCode == 200) {
-        var details = JSON.parse(body);
-        console.log("currently.precipIntensity", details.currently.precipIntensity);
-        var raining = false;
-        if (details.currently.precipIntensity > 0) {
-            raining = true;
-        }
-        response.json({
-                        latitude: details.latitude,
-                        longitude: details.longitude,
-                        raining: raining
-                      });
-      }
-    })
-};
 
 var port = process.env.PORT || 5000;
 
