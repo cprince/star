@@ -9,7 +9,10 @@ var exec = require('child_process').exec,
 var checkAndSend = function () {
     console.log("in sendMail");
     checkrain(43.654,-79.423).then(function(value){
-        child = exec('echo "This will be an alert" | mail -s "Hello nodejs" col@colinprince.com',
+        var subject = '"[wpush] no rain"';
+        if (value.raining) subject = '"[wpush] it is RAINING"';
+        var body = '"This will be an alert"';
+        child = exec('echo ' + body + ' | mail -s ' + subject + ' col@colinprince.com',
           function (error, stdout, stderr) {
             console.log('stdout: ' + stdout);
             console.log('stderr: ' + stderr);
@@ -20,7 +23,7 @@ var checkAndSend = function () {
     });
 }
 
-var timeoutId = setInterval(checkAndSend, 10*60*1000);
+var timeoutId = setInterval(checkAndSend, 30*60*1000);
 
 /* =============================================== */
 
