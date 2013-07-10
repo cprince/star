@@ -8,8 +8,9 @@ var exec = require('child_process').exec,
 
 var checkAndSend = function () {
     checkRain(43.654,-79.423).then(function(value){
-        var subject = '"[wpush] no rain"';
-        if (value.raining) subject = '"[wpush] it is RAINING"';
+        var rainstate = '--';
+        if (value.raining) rainstate = 'RAINING';
+        var subject = '"[wpush] ' + rainstate + ' ' + value.summary + '"';
         var body = JSON.stringify(value);
         console.log(body);
         child = exec('echo ' + body + ' | mail -s ' + subject + ' col@colinprince.com',
@@ -44,9 +45,11 @@ var checkRain = function (lat, lng) {
         }
         deferred.resolve({
                         precipIntensity: details.currently.precipIntensity,
+                        precipProbability: details.currently.precipProbability,
+                        raining: raining,
+                        summary: details.currently.summary,
                         latitude: details.latitude,
-                        longitude: details.longitude,
-                        raining: raining
+                        longitude: details.longitude
                       });
       } else {
         deferred.reject("oops something didn't work");
