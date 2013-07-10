@@ -7,7 +7,6 @@ var exec = require('child_process').exec,
     child;
 
 var checkAndSend = function () {
-    console.log("in sendMail");
     checkRain(43.654,-79.423).then(function(value){
         var subject = '"[wpush] no rain"';
         if (value.raining) subject = '"[wpush] it is RAINING"';
@@ -15,8 +14,7 @@ var checkAndSend = function () {
         console.log(body);
         child = exec('echo ' + body + ' | mail -s ' + subject + ' col@colinprince.com',
           function (error, stdout, stderr) {
-            console.log('stdout: ' + stdout);
-            console.log('stderr: ' + stderr);
+            console.log('mail stderr: ' + stderr);
             if (error !== null) {
               console.log('exec error: ' + error);
             }
@@ -37,6 +35,7 @@ var checkRain = function (lat, lng) {
     var opts = "/" + lat + "," + lng + "?units=ca";
 
     var requrl = forecastbase + key + opts;
+    console.log(requrl);
     request(requrl, function (error, responseRR, body) {
       if (!error && responseRR.statusCode == 200) {
         var details = JSON.parse(body);
