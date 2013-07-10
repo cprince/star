@@ -33,7 +33,6 @@ var checkRain = function (lat, lng) {
     // Windsorish 41.919012,-83.387947
     //  var opts = "/43.654,-79.423,1370495580?units=ca";
     var opts = "/" + lat + "," + lng + "?units=ca";
-
     var requrl = forecastbase + key + opts;
     console.log(requrl);
     request(requrl, function (error, responseRR, body) {
@@ -61,15 +60,13 @@ var checkRain = function (lat, lng) {
 app.get('/rain/:lat,:lng', function(req, response) {
     var lat = req.param('lat'),
         lng = req.param('lng');
-    console.log('lat',lat);
-    console.log('lng',lng);
     checkRain(lat,lng).then(function(value){
         response.json(value);
     });
 });
 
 app.get('/', function(req, response) {
-    response.send('<p>Welcome to the rain predictor</p><p>example:</p><p><a href="/rain/44,-78">/rain/:lat,:lng</a></p>');
+    response.send('<h1>Welcome to the rain predictor</h1><p>example:</p><p><a href="/rain/44,-78">/rain/:lat,:lng</a></p>');
 });
 
 var port = process.env.PORT || 5000;
