@@ -13,7 +13,7 @@ var checkAndSend = function () {
         var subject = '"[wpush] ' + rainstate + ' ' + value.summary + '"';
         var body = JSON.stringify(value);
         console.log(body);
-        child = exec('echo ' + body + ' | mail -s ' + subject + ' col@colinprince.com',
+        child = exec('echo ' + body + ' | mail -s ' + subject + ' -aFrom:col@colinprince.com col@colinprince.com',
           function (error, stdout, stderr) {
             console.log('mail stderr: ' + stderr);
             if (error !== null) {
