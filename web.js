@@ -8,8 +8,8 @@ var mailserver  = email.server.connect();
 
 var checkAndSend = function () {
     checkRain(43.654,-79.423).then(function(value){
-        var rainstate = '--';
-        if (value.raining) rainstate = 'RAINING';
+        var rainstate = '----';
+        if (value.willrain) rainstate = '[WILLRAIN]';
         var subject = '[wpush] ' + rainstate + ' ' + value.summary;
         var body = JSON.stringify(value);
         console.log(body);
@@ -45,14 +45,14 @@ var checkRain = function (lat, lng) {
     request(requrl, function (error, responseRR, body) {
       if (!error && responseRR.statusCode == 200) {
         var details = JSON.parse(body);
-        var raining = false;
+        var willrain = false;
         if (willRain(details)) {
-            raining = true;
+            willrain = true;
         }
         deferred.resolve({
                         precipIntensity: details.currently.precipIntensity,
                         precipProbability: details.currently.precipProbability,
-                        raining: raining,
+                        willrain: willrain,
                         summary: details.currently.summary,
                         latitude: details.latitude,
                         longitude: details.longitude
