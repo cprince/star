@@ -10,7 +10,7 @@ var checkAndSend = function () {
     checkRain(43.654,-79.423).then(function(value){
         var rainstate = '--';
         if (value.raining) rainstate = 'RAINING';
-        var subject = '[apush] ' + rainstate + ' ' + value.summary;
+        var subject = '[wpush] ' + rainstate + ' ' + value.summary;
         var body = JSON.stringify(value);
         console.log(body);
         mailserver.send({
