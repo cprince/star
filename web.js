@@ -5,21 +5,22 @@ var app = express();
 app.use(express.logger());
 var exec = require('child_process').exec,
     child;
+var email   = require("emailjs/email");
+var mailserver  = email.server.connect();
 
 var checkAndSend = function () {
     checkRain(43.654,-79.423).then(function(value){
         var rainstate = '--';
         if (value.raining) rainstate = 'RAINING';
-        var subject = '"[wpush] ' + rainstate + ' ' + value.summary + '"';
+        var subject = '[apush] ' + rainstate + ' ' + value.summary;
         var body = JSON.stringify(value);
         console.log(body);
-        child = exec('echo ' + body + ' | mail -s ' + subject + ' -aFrom:col@colinprince.com col@colinprince.com',
-          function (error, stdout, stderr) {
-            console.log('mail stderr: ' + stderr);
-            if (error !== null) {
-              console.log('exec error: ' + error);
-            }
-        });
+        mailserver.send({
+           text:    body,
+           from:    "Wpush service <col@colinprince.com>",
+           to:      "Colin <col@colinprince.com>",
+           subject: subject
+        }, function(err, message) { console.log(err | message); });
     });
 }
 
