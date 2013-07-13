@@ -18,7 +18,7 @@ var checkAndSend = function () {
            from:    "Wpush service <col@colinprince.com>",
            to:      "Colin <col@colinprince.com>",
            subject: subject
-        }, function(err, message) { console.log(err | message); });
+        }, function(err, message) { console.log(err || message); });
     });
 }
 
@@ -30,7 +30,7 @@ var willRain = function (candidate) {
     if (candidate.currently.precipIntensity > 0.05 && candidate.currently.precipProbability > 0.3 ) {
         return true;
     }
-    return false
+    return false;
 };
 
 var checkRain = function (lat, lng) {
