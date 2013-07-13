@@ -3,8 +3,6 @@ var request = require("request");
 var q = require("q");
 var app = express();
 app.use(express.logger());
-var exec = require('child_process').exec,
-    child;
 var email   = require("emailjs/email");
 var mailserver  = email.server.connect();
 
