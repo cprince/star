@@ -26,9 +26,9 @@ var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
 /* ==================================================================== */
 
-var willRain = function (details) {
-    if (details.currently.precipIntensity > 0) {
-        raining = true;
+var willRain = function (candidate) {
+    if (candidate.currently.precipIntensity > 0.05 && candidate.currently.precipProbability > 0.3 ) {
+        return true;
     }
     return false
 };
