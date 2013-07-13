@@ -27,6 +27,13 @@ var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
 /* ==================================================================== */
 
+var willRain = function (details) {
+    if (details.currently.precipIntensity > 0) {
+        raining = true;
+    }
+    return false
+};
+
 var checkRain = function (lat, lng) {
     var deferred = q.defer();
     var forecastbase = "https://api.forecast.io/forecast/";
@@ -40,7 +47,7 @@ var checkRain = function (lat, lng) {
       if (!error && responseRR.statusCode == 200) {
         var details = JSON.parse(body);
         var raining = false;
-        if (details.currently.precipIntensity > 0) {
+        if (willRain(details)) {
             raining = true;
         }
         deferred.resolve({
