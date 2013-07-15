@@ -1,19 +1,50 @@
 var express = require("express");
 var request = require("request");
 var q = require("q");
+var mongodb = require("mongodb");
+var mongoClient = mongodb.MongoClient;
 var app = express();
 app.use(express.logger());
 var email   = require("emailjs/email");
 var mailserver  = email.server.connect();
 
-var userdb = [{
+
+var addUser = function(json) {
+    // connect mongo db using mongo client
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+
+        var collection = db.collection('users');
+        collection.insert(json, function(err, docs) {
+            console.log(docs);
+        });
+        db.close();
+    });
+};
+
+var getUser = function(username) {
+    // connect mongo db using mongo client
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+
+        var collection = db.collection('users');
+        collection.find({name: username}).toArray(function(err, items) {
+            console.dir(items);
+            // Let's close the db
+            db.close();
+        });;
+    });
+}
+
+addUser({
     lat: 43.654,
     lng: -79.423,
-    email: "Colin <col@colinprince.com>",
-}]
+    name: "Colin",
+    email: "col@colinprince.com"
+});
 
 var checkAndSend = function () {
-    var user = userdb[0];
+    var user = getUser('Colin');
     checkRain(user.lat,user.lng).then(function(value){
         var rainstate = '----';
         if (value.willrain) rainstate = '[WILLRAIN]';
@@ -27,7 +58,7 @@ var checkAndSend = function () {
            subject: subject
         }, function(err, message) { console.log(err || message); });
     });
-}
+};
 
 var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
