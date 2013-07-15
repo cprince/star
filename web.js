@@ -6,8 +6,15 @@ app.use(express.logger());
 var email   = require("emailjs/email");
 var mailserver  = email.server.connect();
 
+var userdb = [{
+    lat: 43.654,
+    lng: -79.423,
+    email: "Colin <col@colinprince.com>",
+}]
+
 var checkAndSend = function () {
-    checkRain(43.654,-79.423).then(function(value){
+    var user = userdb[0];
+    checkRain(user.lat,user.lng).then(function(value){
         var rainstate = '----';
         if (value.willrain) rainstate = '[WILLRAIN]';
         var subject = '[wpush] ' + rainstate + ' ' + value.summary;
@@ -15,8 +22,8 @@ var checkAndSend = function () {
         console.log(body);
         mailserver.send({
            text:    body,
-           from:    "Wpush service <col@colinprince.com>",
-           to:      "Colin <col@colinprince.com>",
+           from:    "Wpush Service <col@colinprince.com>",
+           to:      user.email,
            subject: subject
         }, function(err, message) { console.log(err || message); });
     });
