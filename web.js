@@ -23,32 +23,36 @@ var addUser = function(json) {
     });
 };
 
-var getUser = function(username, response) {
+var getUser = function(username) {
+    var deferred = q.defer();
     // connect mongo db using mongo client
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
         if(err) throw err;
 
         var collection = db.collection('users');
         collection.find({name: username}).toArray(function(err, items) {
-            response.json(items);
+            deferred.resolve(items);
             // Let's close the db
             db.close();
         });
     });
+    return deferred.promise;
 };
 
-var getUsers = function(response) {
+var getUsers = function() {
+    var deferred = q.defer();
     // connect mongo db using mongo client
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
         if(err) throw err;
 
         var collection = db.collection('users');
         collection.find().toArray(function(err, items) {
-            response.json(items);
+            deferred.resolve(items);
             // Let's close the db
             db.close();
         });
     });
+    return deferred.promise;
 };
 
 var addWeather = function(weather) {
@@ -65,32 +69,37 @@ var addWeather = function(weather) {
 };
 
 var getWeather = function(response) {
+    var deferred = q.defer();
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
         if(err) throw err;
 
         var collection = db.collection('weathers');
         collection.find().toArray(function(err, docs) {
-            response.json(docs);
+            deferred.resolve(docs);
             // Let's close the db
             db.close();
         });
     });
+    return deferred.promise;
 };
 
 var checkAndSend = function () {
-    var user = getUser('Colin')[0];
-    checkRain(user.lat,user.lng).then(function(value){
-        var rainstate = '----';
-        if (value.willrain) rainstate = '[WILLRAIN]';
-        var subject = '[wpush] ' + rainstate + ' ' + value.summary;
-        var body = JSON.stringify(value);
-        console.log(body);
-        mailserver.send({
-           text:    body,
-           from:    "Wpush Service <col@colinprince.com>",
-           to:      user.email,
-           subject: subject
-        }, function(err, message) { console.log(err || message); });
+    getUsers().then(function(users){
+        for(var i=0;i<users.length; i++){
+            checkRain(users[i].lat,users[i].lng).then(function(value){
+            var rainstate = '----';
+            if (value.willrain) rainstate = '[WILLRAIN]';
+            var subject = '[wpush] ' + rainstate + ' ' + value.summary;
+            var body = JSON.stringify(value);
+            console.log(body);
+            mailserver.send({
+               text:    body,
+               from:    "Wpush Service <col@colinprince.com>",
+               to:      user.email,
+               subject: subject
+            }, function(err, message) { console.log(err || message); });
+        });
+        }
     });
 };
 
@@ -152,15 +161,21 @@ app.get('/', function(req, response) {
 });
 
 app.get('/users', function(req, response) {
-    getUsers(response);
+    getUsers().then(function(value){
+        response.json(value);
+    });
 });
 
 app.get('/users/:username', function(req, response) {
-    getUser(req.param('username') , response);
+    getUser(req.param('username')).then(function(value){
+        response.json(value);
+    });
 });
 
 app.get('/weathers', function( req, response) {
-    getWeather(response);
+    getWeather().then(function(value){
+        response.json(value);
+    });
 });
 
 app.post('/users', function(req, response){
