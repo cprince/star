@@ -4,6 +4,7 @@ var q = require("q");
 var mongodb = require("mongodb");
 var mongoClient = mongodb.MongoClient;
 var app = express();
+app.use(express.bodyParser());
 app.use(express.logger());
 var email   = require("emailjs/email");
 var mailserver  = email.server.connect();
@@ -22,29 +23,62 @@ var addUser = function(json) {
     });
 };
 
-var getUser = function(username) {
+var getUser = function(username, response) {
     // connect mongo db using mongo client
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
         if(err) throw err;
 
         var collection = db.collection('users');
         collection.find({name: username}).toArray(function(err, items) {
-            console.dir(items);
+            response.json(items);
             // Let's close the db
             db.close();
-        });;
+        });
     });
-}
+};
 
-addUser({
-    lat: 43.654,
-    lng: -79.423,
-    name: "Colin",
-    email: "col@colinprince.com"
-});
+var getUsers = function(response) {
+    // connect mongo db using mongo client
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+
+        var collection = db.collection('users');
+        collection.find().toArray(function(err, items) {
+            response.json(items);
+            // Let's close the db
+            db.close();
+        });
+    });
+};
+
+var addWeather = function(weather) {
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+
+        var collection = db.collection('weathers');
+        collection.insert(weather, function(err, docs) {
+            console.log(docs);
+            // Let's close the db
+            db.close();
+        });
+    });
+};
+
+var getWeather = function(response) {
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+
+        var collection = db.collection('weathers');
+        collection.find().toArray(function(err, docs) {
+            response.json(docs);
+            // Let's close the db
+            db.close();
+        });
+    });
+};
 
 var checkAndSend = function () {
-    var user = getUser('Colin');
+    var user = getUser('Colin')[0];
     checkRain(user.lat,user.lng).then(function(value){
         var rainstate = '----';
         if (value.willrain) rainstate = '[WILLRAIN]';
@@ -95,6 +129,7 @@ var checkRain = function (lat, lng) {
                         latitude: details.latitude,
                         longitude: details.longitude
                       });
+        addWeather(details);
       } else {
         deferred.reject("oops something didn't work");
       }
@@ -114,6 +149,37 @@ app.get('/rain/:lat,:lng', function(req, response) {
 
 app.get('/', function(req, response) {
     response.send('<h1>Welcome to the rain predictor</h1><p>example:</p><p><a href="/rain/44,-78">/rain/:lat,:lng</a></p>');
+});
+
+app.get('/users', function(req, response) {
+    getUsers(response);
+});
+
+app.get('/users/:username', function(req, response) {
+    getUser(req.param('username') , response);
+});
+
+app.get('/weathers', function( req, response) {
+    getWeather(response);
+});
+
+app.post('/users', function(req, response){
+    if(!req.body.hasOwnProperty('lat') || 
+        !req.body.hasOwnProperty('lng') ||
+        !req.body.hasOwnProperty('name') ||
+        !req.body.hasOwnProperty('email')) {
+        response.statusCode = 400;
+        return response.send('Error 400: Post syntax incorrect.');
+    }
+
+    var newUser = {
+        lat : req.body.lat,
+        lng : req.body.lng,
+        name : req.body.name,
+        email : req.body.email
+    };
+
+    addUser(newUser);
 });
 
 var port = process.env.PORT || 5000;
