@@ -86,7 +86,8 @@ var getWeather = function(response) {
 var checkAndSend = function () {
     getUsers().then(function(users){
         for(var i=0;i<users.length; i++){
-            checkRain(users[i].lat,users[i].lng).then(function(value){
+            var user = users[i];
+            checkRain(user.lat,user.lng).then(function(value){
             var rainstate = '----';
             if (value.willrain) rainstate = '[WILLRAIN]';
             var subject = '[wpush] ' + rainstate + ' ' + value.summary;
