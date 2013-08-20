@@ -104,7 +104,7 @@ var checkAndSend = function () {
     });
 };
 
-var timeoutId = setInterval(checkAndSend, 10*60*1000);
+// var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
 /* ==================================================================== */
 
@@ -117,16 +117,7 @@ var willRain = function (candidate) {
 
 var checkRain = function (lat, lng) {
     var deferred = q.defer();
-    var forecastbase = "https://api.forecast.io/forecast/";
-    var key = "91ac025a6fe778dbe3a41cf7748b55d1";
-    // Windsorish 41.919012,-83.387947
-    //  var opts = "/43.654,-79.423,1370495580?units=ca";
-    var opts = "/" + lat + "," + lng + "?units=ca";
-    var requrl = forecastbase + key + opts;
-    console.log(requrl);
-    request(requrl, function (error, responseRR, body) {
-      if (!error && responseRR.statusCode == 200) {
-        var details = JSON.parse(body);
+    oneRequest(lat,lng).then(function(details){
         var willrain = false;
         if (willRain(details)) {
             willrain = true;
@@ -139,13 +130,44 @@ var checkRain = function (lat, lng) {
                         latitude: details.latitude,
                         longitude: details.longitude
                       });
-        addWeather(details);
+        // addWeather(details);
+    });
+    return deferred.promise;
+};
+
+var oneRequest = function (lat, lng) {
+    var deferred = q.defer();
+    var forecastbase = "https://api.forecast.io/forecast/";
+    var key = "91ac025a6fe778dbe3a41cf7748b55d1";
+    // Windsorish 41.919012,-83.387947
+    //  var opts = "/43.654,-79.423,1370495580?units=ca";
+    var opts = "/" + lat + "," + lng + "?units=ca";
+    var requrl = forecastbase + key + opts;
+    console.log(requrl);
+    request(requrl, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var details = JSON.parse(body);
+        deferred.resolve(details);
       } else {
-        deferred.reject("oops something didn't work");
+        deferred.reject( { statusMessage: "oops something didn't work", statusCode: response.statusCode } );
       }
     })
     return deferred.promise;
 };
+
+var forecastRain = function (lat, lng) {
+    console.log('forecastRain');
+
+    oneRequest(lat,lng).then(function(value){
+        console.log(value.currently.summary);
+    });
+
+    return;
+};
+
+// forecastRain(43.654,-79.423);
+forecastRain(27.726,-81.808);
+
 
 /* ==================================================================== */
 
@@ -200,7 +222,7 @@ app.post('/users', function(req, response){
 
 var port = process.env.PORT || 5000;
 
-app.listen(port, function() {
-    console.log("Listening on " + port);
-});
+// app.listen(port, function() {
+//     console.log("Listening on " + port);
+// });
 
