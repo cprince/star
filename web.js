@@ -104,35 +104,33 @@ var checkAndSend = function () {
     });
 };
 
-// var timeoutId = setInterval(checkAndSend, 10*60*1000);
+var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
 /* ==================================================================== */
 
-var willRain = function (candidate) {
-    if (candidate.currently.precipIntensity > 0.05 && candidate.currently.precipProbability > 0.3 ) {
-        return true;
+var willRain = function (candidate, level) {
+    if (typeof level === "undefined") level = 1;
+    switch ( level ) {
+        case 1:
+            var willrain = false;
+            var minutelyData = candidate.minutely.data;
+            for ( var i = 0; i < 20; i++ ) {
+                console.log(minutelyData[i].precipProbability);
+                if ( minutelyData[i].precipProbability > 0.1 ) {
+                    console.log("yes!");
+                    willrain = true;
+                    break;
+                }
+            }
+            return willrain;
+            break;
+        case 2:
+            if (candidate.currently.precipIntensity > 0.05 && candidate.currently.precipProbability > 0.3 ) {
+                return true;
+            }
+            break;
     }
     return false;
-};
-
-var checkRain = function (lat, lng) {
-    var deferred = q.defer();
-    oneRequest(lat,lng).then(function(details){
-        var willrain = false;
-        if (willRain(details)) {
-            willrain = true;
-        }
-        deferred.resolve({
-                        precipIntensity: details.currently.precipIntensity,
-                        precipProbability: details.currently.precipProbability,
-                        willrain: willrain,
-                        summary: details.currently.summary,
-                        latitude: details.latitude,
-                        longitude: details.longitude
-                      });
-        // addWeather(details);
-    });
-    return deferred.promise;
 };
 
 var oneRequest = function (lat, lng) {
@@ -155,19 +153,25 @@ var oneRequest = function (lat, lng) {
     return deferred.promise;
 };
 
-var forecastRain = function (lat, lng) {
-    console.log('forecastRain');
-
-    oneRequest(lat,lng).then(function(value){
-        console.log(value.currently.summary);
+var checkRain = function (lat, lng) {
+    var deferred = q.defer();
+    oneRequest(lat,lng).then(function(details){
+        var willrain = false;
+        if (willRain(details)) {
+            willrain = true;
+        }
+        deferred.resolve({
+                        precipIntensity: details.currently.precipIntensity,
+                        precipProbability: details.currently.precipProbability,
+                        willrain: willrain,
+                        summary: details.currently.summary,
+                        latitude: details.latitude,
+                        longitude: details.longitude
+                      });
+        // addWeather(details);
     });
-
-    return;
+    return deferred.promise;
 };
-
-// forecastRain(43.654,-79.423);
-forecastRain(27.726,-81.808);
-
 
 /* ==================================================================== */
 
@@ -222,7 +226,7 @@ app.post('/users', function(req, response){
 
 var port = process.env.PORT || 5000;
 
-// app.listen(port, function() {
-//     console.log("Listening on " + port);
-// });
+app.listen(port, function() {
+    console.log("Listening on " + port);
+});
 
