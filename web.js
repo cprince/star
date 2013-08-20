@@ -168,7 +168,7 @@ var checkRain = function (lat, lng) {
                         latitude: details.latitude,
                         longitude: details.longitude
                       });
-        // addWeather(details);
+        addWeather(details);
     });
     return deferred.promise;
 };
