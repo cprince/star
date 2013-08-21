@@ -116,7 +116,7 @@ var willRain = function (candidate, level) {
             var minutelyData = candidate.minutely.data;
             for ( var i = 0; i < 20; i++ ) {
                 console.log(minutelyData[i].precipProbability);
-                if ( minutelyData[i].precipProbability > 0.1 ) {
+                if ( minutelyData[i].precipProbability > 0.3 ) {
                     console.log("yes!");
                     willrain = true;
                     break;
