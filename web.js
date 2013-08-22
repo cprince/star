@@ -147,7 +147,9 @@ var oneRequest = function (lat, lng) {
         var details = JSON.parse(body);
         deferred.resolve(details);
       } else {
-        deferred.reject( { statusMessage: "oops something didn't work", statusCode: response.statusCode } );
+        var code = "[Empty]";
+        if (typeof response.statusCode !== "undefined") code = response.statusCode;
+        deferred.reject( { statusMessage: "oops something didn't work", statusCode: code } );
       }
     })
     return deferred.promise;
