@@ -61,7 +61,7 @@ var addWeather = function(weather) {
 
         var collection = db.collection('weathers');
         collection.insert(weather, function(err, docs) {
-            console.log(docs);
+            // console.log(docs);
             // Let's close the db
             db.close();
         });
@@ -115,8 +115,11 @@ var willRain = function (candidate, level) {
             var willrain = false;
             var minutelyData = candidate.minutely.data;
             for ( var i = 0; i < 20; i++ ) {
-                console.log(minutelyData[i].precipProbability);
-                if ( minutelyData[i].precipProbability > 0.3 ) {
+                var intensity = minutelyData[i].precipIntensity - minutelyData[i].precipIntensityError;
+                var probability = minutelyData[i].precipProbability;
+                console.log("intensity",intensity);
+                console.log("probability",probability);
+                if ( (intensity > 0.4) && (probability > 0.3) ) {
                     console.log("yes!");
                     willrain = true;
                     break;
@@ -159,7 +162,7 @@ var checkRain = function (lat, lng) {
     var deferred = q.defer();
     oneRequest(lat,lng).then(function(details){
         var willrain = false;
-        if (willRain(details)) {
+        if (willRain(details,1)) {
             willrain = true;
         }
         deferred.resolve({
