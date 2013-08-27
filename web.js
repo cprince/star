@@ -97,7 +97,10 @@ var checkAndSend = function () {
                text:    body,
                from:    "Wpush Service <col@colinprince.com>",
                to:      user.email,
-               subject: subject
+               subject: subject,
+               attachment: [
+                    { data: "<html><h1>Wpush Service</h1><p>Notification from Wpush</p></html>", alternative: true }
+               ]
             }, function(err, message) { console.log(err || message); });
         });
         }
@@ -106,7 +109,7 @@ var checkAndSend = function () {
 
 var timeoutId = setInterval(checkAndSend, 10*60*1000);
 
-/* ==================================================================== */
+/* =================================================================================================== */
 
 var willRain = function (candidate, level) {
     if (typeof level === "undefined") level = 1;
@@ -176,7 +179,7 @@ var checkRain = function (lat, lng) {
     return deferred.promise;
 };
 
-/* ==================================================================== */
+/* =================================================================================================== */
 
 app.get('/rain/:lat,:lng', function(req, response) {
     var lat = req.param('lat'),
