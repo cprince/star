@@ -99,7 +99,7 @@ var checkAndSend = function () {
                to:      user.email,
                subject: subject,
                attachment: [
-                    { data: "<html><h1>Wpush Service</h1><p>Notification from Wpush</p></html>", alternative: true }
+                    { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://gamma.colinprince.com:5000/notification/10002/confirm">[Accurate]</a> <a href="http://gamma.colinprince.com:5000/notification/10002/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
                ]
             }, function(err, message) { console.log(err || message); });
         });
