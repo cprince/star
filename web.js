@@ -10,6 +10,17 @@ var email   = require("emailjs/email");
 var mailserver  = email.server.connect();
 var uuid = require('node-uuid');
 
+var addNotification = function(json) {
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+        var collection = db.collection('notifications');
+        collection.insert(json, function(err, docs) {
+            console.log(docs);
+        });
+        db.close();
+    });
+};
+
 var addUser = function(json) {
     // connect mongo db using mongo client
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
