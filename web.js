@@ -185,7 +185,8 @@ var checkRain = function (lat, lng) {
                         willrain: willrain,
                         summary: details.currently.summary,
                         latitude: details.latitude,
-                        longitude: details.longitude
+                        longitude: details.longitude,
+                        time: details.currently.time
                       });
         addWeather(details);
     });
