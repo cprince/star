@@ -99,9 +99,10 @@ var checkAndSend = function () {
         for(var i=0;i<users.length; i++){
             var user = users[i];
             checkRain(user.lat,user.lng).then(function(value){
+            var timeformatted = new Date().toLocaleTimeString();
             var rainstate = '----';
             if (value.willrain) rainstate = '[WILLRAIN]';
-            var subject = '[wpush] ' + rainstate + ' ' + value.summary;
+            var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary;
             var body = JSON.stringify(value);
             console.log(body);
             mailserver.send({
@@ -118,7 +119,7 @@ var checkAndSend = function () {
     });
 };
 
-var timeoutId = setInterval(checkAndSend, 10*60*1000);
+var timeoutId = setInterval(checkAndSend, 2*60*1000);
 
 /* =================================================================================================== */
 
