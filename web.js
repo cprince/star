@@ -226,6 +226,10 @@ app.get('/weathers', function( req, response) {
     });
 });
 
+app.get('/notification/:notificationid/', function( req, response) {
+    response.send( "notification id: " + req.param( 'notificationid' ) );
+});
+
 app.post('/users', function(req, response){
     if(!req.body.hasOwnProperty('lat') || 
         !req.body.hasOwnProperty('lng') ||
