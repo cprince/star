@@ -105,15 +105,20 @@ var checkAndSend = function () {
             var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary;
             var body = JSON.stringify(value);
             console.log(body);
-            mailserver.send({
-               text:    body,
-               from:    "Wpush Service <col@colinprince.com>",
-               to:      user.email,
-               subject: subject,
-               attachment: [
-                    { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://gamma.colinprince.com:5000/notification/10002/confirm">[Accurate]</a> <a href="http://gamma.colinprince.com:5000/notification/10002/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
-               ]
-            }, function(err, message) { console.log(err || message); });
+            if ( value.willrain ) {
+              mailserver.send({
+                 text:    body,
+                 from:    "Wpush Service <col@colinprince.com>",
+                 to:      user.email,
+                 subject: subject,
+                 attachment: [
+                      { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://gamma.colinprince.com:5000/notification/10002/confirm">[Accurate]</a> <a href="http://gamma.colinprince.com:5000/notification/10002/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
+                ]
+              }, function(err, message) {
+                      console.log(err || message);
+                      addNotification( { "message-id": message.header['message-id'], "context": body } );
+                  });
+            }
         });
         }
     });
@@ -226,7 +231,7 @@ app.get('/weathers', function( req, response) {
     });
 });
 
-app.get('/notification/:notificationid/', function( req, response) {
+app.get('/notification/:notificationid', function( req, response) {
     response.send( "notification id: " + req.param( 'notificationid' ) );
 });
 
