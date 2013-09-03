@@ -102,7 +102,8 @@ var checkAndSend = function () {
             var timeformatted = new Date().toLocaleTimeString();
             var rainstate = '----';
             if (value.willrain) rainstate = '[WILLRAIN]';
-            var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary;
+            var idstring = uuid.v4();
+            var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + idstring;
             var body = JSON.stringify(value);
             console.log(body);
             if ( value.willrain ) {
@@ -112,7 +113,7 @@ var checkAndSend = function () {
                  to:      user.email,
                  subject: subject,
                  attachment: [
-                      { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://gamma.colinprince.com:5000/notification/10002/confirm">[Accurate]</a> <a href="http://gamma.colinprince.com:5000/notification/10002/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
+                      { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://gamma.colinprince.com:5000/notification/'+idstring+'/confirm">[Accurate]</a> <a href="http://gamma.colinprince.com:5000/notification/'+idstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
                 ]
               }, function(err, message) {
                       console.log(err || message);
@@ -192,7 +193,8 @@ var checkRain = function (lat, lng) {
                         summary: details.currently.summary,
                         latitude: details.latitude,
                         longitude: details.longitude,
-                        time: details.currently.time
+                        time: details.currently.time,
+                        minutely: details.minutely
                       });
         addWeather(details);
     });
