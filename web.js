@@ -233,6 +233,14 @@ app.get('/weathers', function( req, response) {
     });
 });
 
+app.get('/notification/:uuidstring/confirm', function( req, response) {
+    updateNotification( req.param('uuidstring'), 'confirm' );
+});
+
+app.get('/notification/:uuidstring/reject', function( req, response) {
+    updateNotification( req.param('uuidstring'), 'reject' );
+});
+
 app.get('/notification/:notificationid', function( req, response) {
     response.send( "notification id: " + req.param( 'notificationid' ) );
 });
