@@ -102,8 +102,8 @@ var checkAndSend = function () {
             var timeformatted = new Date().toLocaleTimeString();
             var rainstate = '----';
             if (value.willrain) rainstate = '[WILLRAIN]';
-            var idstring = uuid.v4();
-            var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + idstring;
+            var uuidstring = uuid.v4();
+            var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + uuidstring;
             var body = JSON.stringify(value);
             console.log(body);
             if ( value.willrain ) {
@@ -113,11 +113,11 @@ var checkAndSend = function () {
                  to:      user.email,
                  subject: subject,
                  attachment: [
-                      { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://gamma.colinprince.com:5000/notification/'+idstring+'/confirm">[Accurate]</a> <a href="http://gamma.colinprince.com:5000/notification/'+idstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
+                      { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://gamma.colinprince.com:5000/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://gamma.colinprince.com:5000/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
                 ]
               }, function(err, message) {
                       console.log(err || message);
-                      addNotification( { "message-id": message.header['message-id'], "context": body } );
+                      addNotification( { "uuidstring": uuidstring, "message-id": message.header['message-id'], "context": body } );
                   });
             }
         });
