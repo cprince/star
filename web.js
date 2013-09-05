@@ -10,6 +10,17 @@ var email   = require("emailjs/email");
 var mailserver  = email.server.connect();
 var uuid = require('node-uuid');
 
+var updateNotification = function(uuidstring,verdict) {
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+        var collection = db.collection('notifications');
+        collection.update({"uuidstring":uuidstring},{$set:{"verdict":verdict}},{"safe":1}, function(err, docs) {
+            console.log(docs);
+        });
+        db.close();
+    });
+};
+
 var addNotification = function(json) {
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
         if(err) throw err;
@@ -105,7 +116,6 @@ var checkAndSend = function () {
             var uuidstring = uuid.v4();
             var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + uuidstring;
             var body = JSON.stringify(value);
-            console.log(body);
             if ( value.willrain ) {
               mailserver.send({
                  text:    body,
