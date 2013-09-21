@@ -61,6 +61,14 @@ var getUser = function(username) {
     return deferred.promise;
 };
 
+var getUsers2 = function() {
+// https://api.forecast.io/forecast/91ac025a6fe778dbe3a41cf7748b55d1/43.654,-79.423?units=ca
+// https://api.forecast.io/forecast/91ac025a6fe778dbe3a41cf7748b55d1/43.6588,-79.43164?units=ca
+    var deferred = q.defer();
+    deferred.resolve([{lat:43.654,lng:-79.423,email:"col@colinprince.com"},{lat:43.6588,lng:-79.43164,email:"geoff@colinprince.com"}]);
+    return deferred.promise;
+};
+
 var getUsers = function() {
     var deferred = q.defer();
     // connect mongo db using mongo client
@@ -107,35 +115,37 @@ var getWeather = function(response) {
 
 var checkAndSend = function () {
     getUsers().then(function(users){
-        for(var i=0;i<users.length; i++){
+        var i=0;
+        for(i=0;i<users.length; i++){
             var user = users[i];
-            checkRain(user.lat,user.lng).then(function(value){
-            var timeformatted = new Date().toLocaleTimeString();
-            var rainstate = '----';
-            if (value.willrain) rainstate = '[WILLRAIN]';
-            var uuidstring = uuid.v4();
-            var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + uuidstring;
-            var body = JSON.stringify(value);
-            if ( value.willrain ) {
-              mailserver.send({
-                 text:    body,
-                 from:    "Wpush Service <col@colinprince.com>",
-                 to:      user.email,
-                 subject: subject,
-                 attachment: [
-                      { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
-                ]
-              }, function(err, message) {
-                      console.log(err || message);
-                      addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "context": body } );
-                  });
-            }
-        });
+            checkRain(user.lat,user.lng,i).then(function(value){
+                var insideuser = users[value.iu];
+                var timeformatted = new Date().toLocaleTimeString();
+                var rainstate = '----';
+                if (value.willrain) rainstate = '[WILLRAIN]';
+                var uuidstring = uuid.v4();
+                var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + uuidstring;
+                var body = JSON.stringify(value);
+                if ( 1==1 ) {
+                  mailserver.send({
+                     text:    body,
+                     from:    "Wpush Service <col@colinprince.com>",
+                     to:      insideuser.email,
+                     subject: subject,
+                     attachment: [
+                          { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
+                    ]
+                  }, function(err, message) {
+                          console.log(err || message);
+                          addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "context": body } );
+                      });
+                }
+            });
         }
     });
 };
 
-var timeoutId = setInterval(checkAndSend, 3*60*1000);
+var timeoutId = setInterval(checkAndSend, 4*60*1000);
 
 /* =================================================================================================== */
 
@@ -148,8 +158,8 @@ var willRain = function (candidate, level) {
             for ( var i = 0; i < 20; i++ ) {
                 var intensity = minutelyData[i].precipIntensity - minutelyData[i].precipIntensityError;
                 var probability = minutelyData[i].precipProbability;
-                console.log("intensity",intensity);
-                console.log("probability",probability);
+                // console.log("intensity",intensity);
+                // console.log("probability",probability);
                 if ( (intensity > 0.4) && (probability > 0.3) ) {
                     console.log("yes!");
                     willrain = true;
@@ -189,7 +199,7 @@ var oneRequest = function (lat, lng) {
     return deferred.promise;
 };
 
-var checkRain = function (lat, lng) {
+var checkRain = function (lat, lng, iu) {
     var deferred = q.defer();
     oneRequest(lat,lng).then(function(details){
         var willrain = false;
@@ -197,6 +207,7 @@ var checkRain = function (lat, lng) {
             willrain = true;
         }
         deferred.resolve({
+                        iu: iu,
                         precipIntensity: details.currently.precipIntensity,
                         precipProbability: details.currently.precipProbability,
                         willrain: willrain,
