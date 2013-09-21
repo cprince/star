@@ -61,14 +61,6 @@ var getUser = function(username) {
     return deferred.promise;
 };
 
-var getUsers2 = function() {
-// https://api.forecast.io/forecast/91ac025a6fe778dbe3a41cf7748b55d1/43.654,-79.423?units=ca
-// https://api.forecast.io/forecast/91ac025a6fe778dbe3a41cf7748b55d1/43.6588,-79.43164?units=ca
-    var deferred = q.defer();
-    deferred.resolve([{lat:43.654,lng:-79.423,email:"col@colinprince.com"},{lat:43.6588,lng:-79.43164,email:"geoff@colinprince.com"}]);
-    return deferred.promise;
-};
-
 var getUsers = function() {
     var deferred = q.defer();
     // connect mongo db using mongo client
@@ -126,7 +118,7 @@ var checkAndSend = function () {
                 var uuidstring = uuid.v4();
                 var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + uuidstring;
                 var body = JSON.stringify(value);
-                if ( 1==1 ) {
+                if ( value.willrain ) {
                   mailserver.send({
                      text:    body,
                      from:    "Wpush Service <col@colinprince.com>",
