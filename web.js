@@ -137,7 +137,7 @@ var checkAndSend = function () {
     });
 };
 
-var timeoutId = setInterval(checkAndSend, 4*60*1000);
+var timeoutId = setInterval(checkAndSend, 3*60*1000);
 
 /* =================================================================================================== */
 
