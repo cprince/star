@@ -225,7 +225,8 @@ app.get('/rain/:lat,:lng', function(req, response) {
 });
 
 app.get('/', function(req, response) {
-    response.send('<h1>Welcome to the rain predictor</h1><p>example:</p><p><a href="/rain/44,-78">/rain/:lat,:lng</a></p>');
+
+    response.sendfile('htdocs/index.html');
 });
 
 app.get('/users', function(req, response) {
