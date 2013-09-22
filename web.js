@@ -129,7 +129,7 @@ var checkAndSend = function () {
                     ]
                   }, function(err, message) {
                           console.log(err || message);
-                          addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "context": body } );
+                          addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "email": insideuser.email, "context": body } );
                       });
                 }
             });
