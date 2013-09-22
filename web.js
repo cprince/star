@@ -206,6 +206,7 @@ var checkRain = function (lat, lng, iu) {
                         summary: details.currently.summary,
                         latitude: details.latitude,
                         longitude: details.longitude,
+                        timezone: details.timezone,
                         time: details.currently.time,
                         minutely: details.minutely
                       });
