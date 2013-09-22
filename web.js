@@ -248,10 +248,12 @@ app.get('/weathers', function( req, response) {
 
 app.get('/notification/:uuidstring/confirm', function( req, response) {
     updateNotification( req.param('uuidstring'), 'confirm' );
+    response.send( "Thank you for responding to notification with id: " + req.param( 'uuidstring' ) );
 });
 
 app.get('/notification/:uuidstring/reject', function( req, response) {
     updateNotification( req.param('uuidstring'), 'reject' );
+    response.send( "Thank you for responding to notification with id: " + req.param( 'uuidstring' ) );
 });
 
 app.get('/notification/:notificationid', function( req, response) {
