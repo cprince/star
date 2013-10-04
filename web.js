@@ -152,7 +152,7 @@ var willRain = function (candidate, level) {
                 var probability = minutelyData[i].precipProbability;
                 // console.log("intensity",intensity);
                 // console.log("probability",probability);
-                if ( (intensity > 0.4) && (probability > 0.3) ) {
+                if ( (intensity > 0.6) && (probability > 0.5) ) {
                     console.log("yes!");
                     willrain = true;
                     break;
