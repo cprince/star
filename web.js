@@ -32,6 +32,19 @@ var addNotification = function(json) {
     });
 };
 
+var getNotifications = function(email) {
+    var deferred = q.defer();
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+        var collection = db.collection('notifications');
+        collection.find({email: email},{"verdict":1}).toArray(function(err, items) {
+            deferred.resolve(items);
+            db.close();
+        });
+    });
+    return deferred.promise;
+};
+
 var addUser = function(json) {
     // connect mongo db using mongo client
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
@@ -105,6 +118,12 @@ var getWeather = function(response) {
     return deferred.promise;
 };
 
+var blackout = function (candidate) {
+    getNotifications(candidate).then(function(notifications){
+        // if recent notification then don't send
+    })
+};
+
 var checkAndSend = function () {
     getUsers().then(function(users){
         var i=0;
@@ -118,6 +137,7 @@ var checkAndSend = function () {
                 var uuidstring = uuid.v4();
                 var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + uuidstring;
                 var body = JSON.stringify(value);
+                var shouldsend = insideuser.lastNotification;
                 if ( value.willrain ) {
                   mailserver.send({
                      text:    body,
@@ -210,7 +230,7 @@ var checkRain = function (lat, lng, iu) {
                         time: details.currently.time,
                         minutely: details.minutely
                       });
-        addWeather(details);
+        // addWeather(details);
     });
     return deferred.promise;
 };
@@ -242,23 +262,26 @@ app.get('/users/:username', function(req, response) {
     });
 });
 
-app.get('/weathers', function( req, response) {
+app.get('/weathers', function(req, response) {
     getWeather().then(function(value){
         response.json(value);
     });
 });
 
-app.get('/notification/:uuidstring/confirm', function( req, response) {
+app.get('/notification/history/:email', function(req, response) {
+});
+
+app.get('/notification/:uuidstring/confirm', function(req, response) {
     updateNotification( req.param('uuidstring'), 'confirm' );
     response.send( "Thank you for responding to notification with id: " + req.param( 'uuidstring' ) );
 });
 
-app.get('/notification/:uuidstring/reject', function( req, response) {
+app.get('/notification/:uuidstring/reject', function(req, response) {
     updateNotification( req.param('uuidstring'), 'reject' );
     response.send( "Thank you for responding to notification with id: " + req.param( 'uuidstring' ) );
 });
 
-app.get('/notification/:notificationid', function( req, response) {
+app.get('/notification/:notificationid', function(req, response) {
     response.send( "notification id: " + req.param( 'notificationid' ) );
 });
 
