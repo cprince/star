@@ -129,6 +129,7 @@ var checkAndSend = function () {
         var i=0;
         for(i=0;i<users.length; i++){
             var user = users[i];
+            if ( !user.enabled ) continue;
             checkRain(user.lat,user.lng,i).then(function(value){
                 var insideuser = users[value.iu];
                 var timeformatted = new Date().toLocaleTimeString();
