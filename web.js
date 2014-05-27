@@ -7,7 +7,13 @@ var app = express();
 app.use(express.bodyParser());
 app.use(express.logger());
 var email   = require("emailjs/email");
-var mailserver  = email.server.connect();
+var mailserver  = email.server.connect({
+    user:    "col@colinprince.com",
+    password:"Tpnz47Uc9KS6ExqF9cIfJQ",
+    host:    "smtp.mandrillapp.com",
+    ssl:     true
+});
+
 var uuid = require('node-uuid');
 
 var updateNotification = function(uuidstring,verdict) {
