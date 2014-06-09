@@ -38,6 +38,21 @@ var addNotification = function(json) {
     });
 };
 
+var getNotificationStats = function() {
+    var deferred = q.defer();
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+        var collection = db.collection('notifications');
+        //collection.aggregate( { $group: { _id: { year: { $year: "$date" } } } }, function(err, items) {
+        //collection.aggregate( { $group: { _id: { month: { $month: "$date" }, dayOfMonth: { $dayOfMonth: "$date" }, year: { $year: "$date" } }, count: { $sum : 1 } } } , function(err, items) {
+        collection.aggregate( [ { $match : { date : { $gte : new Date(2014, 1, 1) } } }, { $group: { _id: { month: { $month: "$date" }, dayOfMonth: { $dayOfMonth: "$date" }, year: { $year: "$date" } }, count: { $sum : 1 } } }, { $sort: { "_id.year":1,"_id.month":1,"_id.dayOfMonth":1 } } ] , function(err, items) {
+            deferred.resolve(items);
+            db.close();
+        });
+    });
+    return deferred.promise;
+};
+
 var getNotifications = function(email) {
     var deferred = q.defer();
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
@@ -273,6 +288,16 @@ app.get('/weathers', function(req, response) {
     getWeather().then(function(value){
         response.json(value);
     });
+});
+
+app.get('/stats/json', function(req, response) {
+    getNotificationStats().then(function(value) {;
+        response.json(value);
+    });
+});
+
+app.get('/stats', function(req, response) {
+    response.sendfile('htdocs/stats.html');
 });
 
 app.get('/notification/history/:email', function(req, response) {

@@ -1,0 +1,59 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <title>Wpush Stats</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset=utf-8>
+</head>
+<body>
+
+<h1>Stats</h1>
+
+<canvas id="myChart" width="200" height="300"></canvas>
+
+<h2>Contact</h2>
+
+<p><a href="mailto:col@colinprince.com">Colin Prince</a></p>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+
+var dataX = {
+    labels : [],
+    datasets : [
+            {
+                    fillColor : "rgba(151,187,205,0.5)",
+                  strokeColor : "rgba(151,187,205,1)",
+                  pointColor : "rgba(151,187,205,1)",
+            pointStrokeColor : "#fff",
+                        data : []
+              }
+        ]
+}
+
+$.get("/stats/json", function(data) {
+
+  for (var i = 0; i < data.length; i++) {
+    var cur = data[i];
+    var count = cur.count;
+    var monthlabel = cur._id.month;
+    if ( monthlabel < 10 ) monthlabel = '0' + monthlabel;
+    var daylabel = cur._id.dayOfMonth;
+    if ( daylabel < 10 ) daylabel = '0' + daylabel;
+    var datelabel = '' + cur._id.year + monthlabel + daylabel;
+    dataX.datasets[0].data.push(count);
+    dataX.labels.push(datelabel);
+  }
+
+  var ctx = document.getElementById("myChart").getContext("2d");
+  var options = { scaleFontSize : 12, scaleFontFamily : "'Arial'" }
+  var myNewChart = new Chart(ctx).Bar(dataX, options);
+
+});
+
+</script>
+
+</body>
+</html>
