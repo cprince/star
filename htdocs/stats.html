@@ -1,13 +1,35 @@
 <!DOCTYPE html> 
 <html>
 <head>
-    <title>Wpush Stats</title>
+<title>Wpush Stats</title>
+<link rel="stylesheet" type="text/css" href="http://wpushassets.colinprince.com/screen.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset=utf-8>
 </head>
 <body>
 
+<style>
+#month-holder div span {
+  margin-left: 2px;
+  font-size: 10px;
+  font-variant: small-caps;
+}
+#month-holder div div {
+  width: 7px;
+  height: 7px;
+  color: rgba(230,160,160,0.8);
+  background-color: rgba(210,210,210,1.0);
+  margin-right: 1px;
+  display: inline-block;
+  opacity: 0.1;
+}
+</style>
+
 <h1>Stats</h1>
+
+<p>Notifications sent per day UTC</p>
+
+<div id="month-holder"></div>
 
 <canvas id="myChart" width="200" height="300"></canvas>
 
@@ -33,11 +55,33 @@ var dataX = {
         ]
 }
 
-$.get("/stats/json", function(data) {
+function makeLine ( element, year, month, labeltext, data, max ) {
+  var monthdiv = document.createElement('div');
+  for ( var i = 0; i < 31; i++) {
+    var newdiv = document.createElement('div');
+    for ( var j = 0; j < data.length; j++ ) {
+      var cval = data[j]._id;
+      console.log(max,data[j]);
+      if ( year ==  cval.year && month == cval.month && i == cval.dayOfMonth ) {
+        newdiv.style.backgroundColor = 'rgba(175,30,30,1.0)';
+        newdiv.style.opacity = data[j].count/max;
+      }
+    }
+    monthdiv.appendChild(newdiv);
+  }
+  var label = document.createElement('span');
+  var labelnode = document.createTextNode(labeltext);
+  label.appendChild(labelnode);
+  monthdiv.appendChild(label);
+  element.appendChild(monthdiv);
+}
 
+$.get("/stats/json", function(data) {
+  var max = 0;
   for (var i = 0; i < data.length; i++) {
     var cur = data[i];
     var count = cur.count;
+    if (count > max) max = count;
     var monthlabel = cur._id.month;
     if ( monthlabel < 10 ) monthlabel = '0' + monthlabel;
     var daylabel = cur._id.dayOfMonth;
@@ -46,6 +90,10 @@ $.get("/stats/json", function(data) {
     dataX.datasets[0].data.push(count);
     dataX.labels.push(datelabel);
   }
+
+  var holder = document.getElementById('month-holder');
+  makeLine ( holder, 2014, 5, 'May  2014', data, max );
+  makeLine ( holder, 2014, 6, 'June 2014', data, max );
 
   var ctx = document.getElementById("myChart").getContext("2d");
   var options = { scaleFontSize : 12, scaleFontFamily : "'Arial'" }
