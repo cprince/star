@@ -45,7 +45,7 @@ var getNotificationStats = function() {
         var collection = db.collection('notifications');
         //collection.aggregate( { $group: { _id: { year: { $year: "$date" } } } }, function(err, items) {
         //collection.aggregate( { $group: { _id: { month: { $month: "$date" }, dayOfMonth: { $dayOfMonth: "$date" }, year: { $year: "$date" } }, count: { $sum : 1 } } } , function(err, items) {
-        collection.aggregate( [ { $match : { date : { $gte : new Date(2014, 1, 1) } } }, { $group: { _id: { month: { $month: "$date" }, dayOfMonth: { $dayOfMonth: "$date" }, year: { $year: "$date" } }, count: { $sum : 1 } } }, { $sort: { "_id.year":1,"_id.month":1,"_id.dayOfMonth":1 } } ] , function(err, items) {
+        collection.aggregate( [ { $match : { date : { $gte : new Date(2013, 1, 1) } } }, { $group: { _id: { month: { $month: "$date" }, dayOfMonth: { $dayOfMonth: "$date" }, year: { $year: "$date" } }, count: { $sum : 1 } } }, { $sort: { "_id.year":1,"_id.month":1,"_id.dayOfMonth":1 } } ] , function(err, items) {
             deferred.resolve(items);
             db.close();
         });
