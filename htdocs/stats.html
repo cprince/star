@@ -65,6 +65,7 @@ function makeLine ( element, year, month, labeltext, data, max ) {
       if ( year ==  cval.year && month == cval.month && i == cval.dayOfMonth ) {
         newdiv.style.backgroundColor = 'rgba(135,0,0,1.0)';
         newdiv.style.opacity = data[j].count/max;
+        newdiv.setAttribute( "title", data[j].count );
       }
     }
     monthdiv.appendChild(newdiv);
