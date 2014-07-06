@@ -161,6 +161,10 @@ var checkAndSend = function () {
                 var body = JSON.stringify(value);
                 var shouldsend = insideuser.lastNotification;
                 if ( value.willrain ) {
+                  if ( insideuser.lastNotification < value.time ) {
+                    console.log("time");
+                    // set time for user
+                  }
                   mailserver.send({
                      text:    body,
                      from:    "Wpush Service <col@colinprince.com>",
