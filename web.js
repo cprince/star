@@ -16,6 +16,17 @@ var mailserver  = email.server.connect({
 
 var uuid = require('node-uuid');
 
+var updateUserLastNotification = function(useremail, time) {
+    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
+        if(err) throw err;
+        var collection = db.collection('users');
+        collection.update({"email":useremail},{$set:{"lastNotification":time}},{"safe":1}, function(err, docs) {
+            console.log(docs);
+        });
+        db.close();
+    });
+};
+
 var updateNotification = function(uuidstring,verdict) {
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
         if(err) throw err;
@@ -159,9 +170,9 @@ var checkAndSend = function () {
                 var uuidstring = uuid.v4();
                 var subject = '[wpush] Rain is on the way' + ' ' + timeformatted + ' ' + value.summary;
                 var body = JSON.stringify(value);
-                var shouldsend = insideuser.lastNotification;
+                var shouldsend = false;
                 if ( value.willrain ) {
-                  if ( insideuser.lastNotification < value.time ) {
+                  if ( insideuser.lastNotification != -1 && insideuser.lastNotification < value.time ) {
                     console.log("time");
                     // set time for user
                   }
