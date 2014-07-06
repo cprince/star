@@ -174,6 +174,7 @@ var checkAndSend = function () {
                 if ( value.willrain ) {
                   if ( insideuser.lastNotification != -1 && insideuser.lastNotification < value.time ) {
                     console.log("time");
+                    updateUserLastNotification(insideuser.email,value.time);
                     // set time for user
                   }
                   mailserver.send({
