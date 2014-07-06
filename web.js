@@ -157,7 +157,7 @@ var checkAndSend = function () {
                 var rainstate = '----';
                 if (value.willrain) rainstate = '[WILLRAIN]';
                 var uuidstring = uuid.v4();
-                var subject = '[wpush] ' + rainstate + ' ' + timeformatted + ' ' + value.summary + ' ' + uuidstring;
+                var subject = '[wpush] Rain is on the way' + ' ' + timeformatted + ' ' + value.summary;
                 var body = JSON.stringify(value);
                 var shouldsend = insideuser.lastNotification;
                 if ( value.willrain ) {
