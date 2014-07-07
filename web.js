@@ -13,8 +13,9 @@ var mailserver  = email.server.connect({
     host:    "smtp.mandrillapp.com",
     ssl:     true
 });
-
 var uuid = require('node-uuid');
+var twilio = require('twilio');
+var client = new twilio.RestClient('AC41caac4d1dbae887c881215f4b2e8c13', 'b702ec1d72212e8d9ab0a755e14100ca');
 
 var updateUserLastNotification = function(useremail, time) {
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
@@ -156,6 +157,23 @@ var blackout = function (candidate) {
     })
 };
 
+var sendSms = function (dest) {
+  client.sms.messages.create({
+      to:'+14166240728',
+      from:'+12048134333',
+      body:'ahoy hoy! Testing Twilio and node.js'
+  }, function(error, message) {
+      if (!error) {
+          console.log('Success! The SID for this SMS message is:');
+          console.log(message.sid);
+          console.log('Message sent on:');
+          console.log(message.dateCreated);
+      } else {
+          console.log('Oops! There was an error.');
+      }
+  });
+}
+
 var checkAndSend = function () {
     getUsers().then(function(users){
         var i=0;
@@ -165,17 +183,18 @@ var checkAndSend = function () {
             checkRain(user.lat,user.lng,i).then(function(value){
                 var insideuser = users[value.iu];
                 var timeformatted = new Date().toLocaleTimeString();
-                var rainstate = '----';
-                if (value.willrain) rainstate = '[WILLRAIN]';
                 var uuidstring = uuid.v4();
-                var subject = '[wpush] Rain is on the way' + ' ' + timeformatted + ' ' + value.summary;
+                var subject = '[wpush] Rain is on the way' + timeformatted + ' ' + value.summary;
                 var body = JSON.stringify(value);
                 var shouldsend = false;
+                //if ( insideuser.lastNotification != -1 && insideuser.lastNotification < value.time ) {
                 if ( value.willrain ) {
-                  if ( insideuser.lastNotification != -1 && insideuser.lastNotification < value.time ) {
-                    console.log("time");
-                    updateUserLastNotification(insideuser.email,value.time);
-                    // set time for user
+                  // try out texting!
+                  if ( insideuser.email == "col@colinprince.com" ) {
+                    if ( insideuser.lastNotification == -1 ) {
+                      sendSms('+14166240728');
+                      updateUserLastNotification(insideuser.email,value.time);
+                    }
                   }
                   mailserver.send({
                      text:    body,
@@ -183,7 +202,7 @@ var checkAndSend = function () {
                      to:      insideuser.email,
                      subject: subject,
                      attachment: [
-                          { data: '<html><h1>Wpush Service</h1><p>Notification from Wpush: it\'s gonna rain</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
+                          { data: '<html><h1>Wpush Service</h1><p>Rain is on the way in 10 to 20 minutes</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
                     ]
                   }, function(err, message) {
                           console.log(err || message);
