@@ -159,7 +159,7 @@ var blackout = function (candidate) {
 
 var sendSms = function (dest) {
   client.sms.messages.create({
-      to:'+14166240728',
+      to:dest,
       from:'+12048134333',
       body:'Rain is coming'
   }, function(error, message) {
@@ -192,7 +192,7 @@ var checkAndSend = function () {
                   // try out texting!
                   if ( insideuser.email == "col@colinprince.com" ) {
                     if ( insideuser.lastNotification == -1 ) {
-                      sendSms('+14166240728');
+                      sendSms(insideuser.smsnumber);
                       updateUserLastNotification(insideuser.email,value.time);
                     }
                   }
