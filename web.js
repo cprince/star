@@ -187,10 +187,9 @@ var checkAndSend = function () {
                 var subject = '[wpush] Rain is on the way ' + timeformatted + ' ' + value.summary;
                 var body = JSON.stringify(value);
                 var shouldsend = false;
-                //if ( insideuser.lastNotification != -1 && insideuser.lastNotification < value.time ) {
                 if ( value.willrain ) {
                   // try out texting!
-                  if ( insideuser.email == "col@colinprince.com" ) {
+                  if ( insideuser.sms ) {
                     if ( insideuser.lastNotification == -1 ) {
                       sendSms(insideuser.smsnumber);
                       updateUserLastNotification(insideuser.email,value.time);
