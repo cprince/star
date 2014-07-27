@@ -8,7 +8,8 @@
     "twilio": "",
     "request": "",
     "q": "",
-    "node-uuid": "1.4.x"
+    "node-uuid": "1.4.x",
+    "moment": ""
   },
   "engines": {
     "node": "0.10.x",
