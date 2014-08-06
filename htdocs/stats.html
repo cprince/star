@@ -63,7 +63,7 @@ function makeLine ( element, year, month, labeltext, data, max ) {
       var cval = data[j]._id;
       console.log(max,data[j]);
       if ( year ==  cval.year && month == cval.month && i == cval.dayOfMonth ) {
-        newdiv.style.backgroundColor = 'rgba(135,0,0,1.0)';
+        newdiv.style.backgroundColor = 'rgba(105,0,0,1.0)';
         newdiv.style.opacity = data[j].count/max;
         newdiv.setAttribute( "title", data[j].count );
       }
@@ -98,6 +98,7 @@ $.get("/stats/json", function(data) {
   makeLine ( holder, 2014, 5, 'May  2014', data, max );
   makeLine ( holder, 2014, 6, 'June 2014', data, max );
   makeLine ( holder, 2014, 7, 'July 2014', data, max );
+  makeLine ( holder, 2014, 8, 'August 2014', data, max );
 
   var ctx = document.getElementById("myChart").getContext("2d");
   var options = { scaleFontSize : 12, scaleFontFamily : "'Arial'" }
