@@ -61,11 +61,10 @@ function makeLine ( element, year, month, labeltext, data, max ) {
     var newdiv = document.createElement('div');
     for ( var j = 0; j < data.length; j++ ) {
       var cval = data[j]._id;
-      console.log(max,data[j]);
       if ( year ==  cval.year && month == cval.month && i == cval.dayOfMonth ) {
         newdiv.style.backgroundColor = 'rgba(105,0,0,1.0)';
         newdiv.style.opacity = data[j].count/max;
-        newdiv.setAttribute( "title", data[j].count );
+        newdiv.setAttribute( "title", '('+year+'-'+month+'-'+i+') '+data[j].count );
       }
     }
     monthdiv.appendChild(newdiv);
