@@ -13,6 +13,7 @@ var mailserver  = email.server.connect({
     host:    "smtp.mandrillapp.com",
     ssl:     true
 });
+var moment = require("moment-timezone");
 var uuid = require('node-uuid');
 var twilio = require('twilio');
 var client = new twilio.RestClient('AC41caac4d1dbae887c881215f4b2e8c13', 'b702ec1d72212e8d9ab0a755e14100ca');
@@ -180,6 +181,13 @@ var checkAndSend = function () {
         for(i=0;i<users.length; i++){
             var user = users[i];
             if ( !user.enabled ) continue;
+            var now = moment();
+            var upperLimit = moment().hour(22).minute(0).second(0);
+            var lowerLimit = moment().hour(8).minute(0).second(0);
+            console.log(now.format());
+            if ( now.isBefore(upperLimit) ) console.log("is before upperLimit");
+            if ( now.isAfter(lowerLimit) ) console.log("is after upperLimit");
+            if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) console.log("showtime");
             checkRain(user.lat,user.lng,i).then(function(value){
                 var insideuser = users[value.iu];
                 var timeformatted = new Date().toLocaleTimeString();
@@ -212,6 +220,7 @@ var checkAndSend = function () {
     });
 };
 
+setTimeout(checkAndSend, 1000);
 var timeoutId = setInterval(checkAndSend, 3*60*1000);
 
 /* =================================================================================================== */
