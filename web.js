@@ -157,11 +157,11 @@ var blackout = function (candidate) {
     })
 };
 
-var sendSms = function (dest) {
+var sendSms = function (dest, message, timeformatted) {
   client.sms.messages.create({
       to:dest,
       from:'+12048134333',
-      body:'Rain is coming'
+      body:'Rain is coming '+timeformatted
   }, function(error, message) {
       if (!error) {
           console.log('Success! The SID for this SMS message is:');
@@ -188,10 +188,9 @@ var checkAndSend = function () {
                 var body = JSON.stringify(value);
                 var shouldsend = false;
                 if ( value.willrain ) {
-                  // try out texting!
                   if ( insideuser.sms ) {
                     if ( insideuser.lastNotification == -1 ) {
-                      sendSms(insideuser.smsnumber);
+                      sendSms(insideuser.smsnumber, value.summary, timeformatted);
                       updateUserLastNotification(insideuser.email,value.time);
                     }
                   }
@@ -201,7 +200,7 @@ var checkAndSend = function () {
                      to:      insideuser.email,
                      subject: subject,
                      attachment: [
-                          { data: '<html><h1>Wpush Service</h1><p>Rain is on the way in 10 to 20 minutes</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
+                          { data: '<html><h1>Wpush Service</h1><p>Rain is on the way soon. '+value.longSummary+'.</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
                     ]
                   }, function(err, message) {
                           console.log(err || message);
@@ -280,6 +279,7 @@ var checkRain = function (lat, lng, iu) {
                         precipProbability: details.currently.precipProbability,
                         willrain: willrain,
                         summary: details.currently.summary,
+                        longSummary: details.minutely.summary,
                         latitude: details.latitude,
                         longitude: details.longitude,
                         timezone: details.timezone,
