@@ -137,20 +137,6 @@ var addWeather = function(weather) {
     });
 };
 
-var getWeather = function(response) {
-    var deferred = q.defer();
-    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
-        if(err) throw err;
-
-        var collection = db.collection('weathers');
-        collection.find().toArray(function(err, docs) {
-            deferred.resolve(docs);
-            // Let's close the db
-            db.close();
-        });
-    });
-    return deferred.promise;
-};
 
 var blackout = function (candidate) {
     getNotifications(candidate).then(function(notifications){
@@ -323,12 +309,6 @@ app.get('/users', function(req, response) {
 
 app.get('/users/:username', function(req, response) {
     getUser(req.param('username')).then(function(value){
-        response.json(value);
-    });
-});
-
-app.get('/weathers', function(req, response) {
-    getWeather().then(function(value){
         response.json(value);
     });
 });
