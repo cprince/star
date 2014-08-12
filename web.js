@@ -198,7 +198,7 @@ var checkAndSend = function () {
                 if ( value.willrain ) {
                   if ( insideuser.sms ) {
                     if ( insideuser.lastNotification == -1 ) {
-                      sendSms(insideuser.smsnumber, value.summary, timeformatted);
+                      sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
                       updateUserLastNotification(insideuser.email,value.time);
                     }
                   }
