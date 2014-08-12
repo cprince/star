@@ -167,13 +167,14 @@ var checkAndSend = function () {
         for(i=0;i<users.length; i++){
             var user = users[i];
             if ( !user.enabled ) continue;
+            var isBlackout = true;
             var now = moment();
             var upperLimit = moment().hour(22).minute(0).second(0);
             var lowerLimit = moment().hour(8).minute(0).second(0);
-            console.log(now.format());
-            if ( now.isBefore(upperLimit) ) console.log("is before upperLimit");
-            if ( now.isAfter(lowerLimit) ) console.log("is after upperLimit");
-            if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) console.log("showtime");
+            if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) {
+              console.log("showtime!");
+              isBlackout = false;
+            }
             checkRain(user.lat,user.lng,i).then(function(value){
                 var insideuser = users[value.iu];
                 var timeformatted = new Date().toLocaleTimeString();
@@ -182,10 +183,12 @@ var checkAndSend = function () {
                 var body = JSON.stringify(value);
                 var shouldsend = false;
                 if ( value.willrain ) {
-                  if ( insideuser.sms ) {
-                    if ( insideuser.lastNotification == -1 ) {
-                      sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
-                      updateUserLastNotification(insideuser.email,value.time);
+                  if ( !isBlackout ) {
+                    if ( insideuser.sms ) {
+                      //if ( insideuser.lastNotification == -1 ) {
+                        sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
+                        updateUserLastNotification(insideuser.email,value.time);
+                      //}
                     }
                   }
                   mailserver.send({
