@@ -162,7 +162,7 @@ var sendSms = function (dest, message, timeformatted) {
   client.sms.messages.create({
       to:dest,
       from:'+12048134333',
-      body:'Rain is coming. '+message+'. '+timeformatted
+      body:'Rain is coming. '+message+' '+timeformatted
   }, function(error, message) {
       if (!error) {
           console.log('Success! The SID for this SMS message is:');
