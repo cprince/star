@@ -167,15 +167,17 @@ var checkAndSend = function () {
         for(i=0;i<users.length; i++){
             var user = users[i];
             if ( !user.enabled ) continue;
+
             var isBlackout = true;
             var now = moment();
-            var upperLimit = moment().hour(22).minute(0).second(0);
+            var upperLimit = moment().hour(23).minute(0).second(0);
             var lowerLimit = moment().hour(8).minute(0).second(0);
             if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) {
-              console.log("showtime!");
               isBlackout = false;
             }
             checkRain(user.lat,user.lng,i).then(function(value){
+                var epochTime = Math.floor(new Date().getTime()/1000);
+
                 var insideuser = users[value.iu];
                 var timeformatted = new Date().toLocaleTimeString();
                 var uuidstring = uuid.v4();
@@ -184,13 +186,17 @@ var checkAndSend = function () {
                 var shouldsend = false;
                 if ( value.willrain ) {
                   if ( !isBlackout ) {
+console.log("epochTime", epochTime);
+console.log("insideuser.lastNotification",insideuser.lastNotification);
+console.log("difference is",epochTime - insideuser.lastNotification);
                     if ( insideuser.sms ) {
-                      //if ( insideuser.lastNotification == -1 ) {
+                      if ( epochTime - insideuser.lastNotification > 4*60*60 ) { // notify if over 4 hours
                         sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
                         updateUserLastNotification(insideuser.email,value.time);
-                      //}
+                      }
                     }
                   }
+                  if ( 1==0 ) { // disable for now
                   mailserver.send({
                      text:    body,
                      from:    "Wpush Service <col@colinprince.com>",
@@ -203,13 +209,14 @@ var checkAndSend = function () {
                           console.log(err || message);
                           addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "email": insideuser.email, "context": body } );
                       });
+                  } // end stop mailsend
                 }
             });
         }
     });
 };
 
-setTimeout(checkAndSend, 1000);
+setTimeout(checkAndSend, 2000);
 var timeoutId = setInterval(checkAndSend, 3*60*1000);
 
 /* =================================================================================================== */
