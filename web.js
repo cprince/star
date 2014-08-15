@@ -124,19 +124,6 @@ var getUsers = function() {
     return deferred.promise;
 };
 
-var addWeather = function(weather) {
-    mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
-        if(err) throw err;
-
-        var collection = db.collection('weathers');
-        collection.insert(weather, function(err, docs) {
-            // console.log(docs);
-            // Let's close the db
-            db.close();
-        });
-    });
-};
-
 var sendSms = function (dest, message, timeformatted) {
   client.sms.messages.create({
       to:dest,
@@ -151,6 +138,8 @@ var sendSms = function (dest, message, timeformatted) {
       }
   });
 }
+
+/* =================================================================================================== */
 
 var checkAndSend = function () {
     getUsers().then(function(users){
