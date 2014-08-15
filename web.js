@@ -137,13 +137,6 @@ var addWeather = function(weather) {
     });
 };
 
-
-var blackout = function (candidate) {
-    getNotifications(candidate).then(function(notifications){
-        // if recent notification then don't send
-    })
-};
-
 var sendSms = function (dest, message, timeformatted) {
   client.sms.messages.create({
       to:dest,
