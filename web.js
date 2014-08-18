@@ -150,17 +150,17 @@ var checkAndSend = function () {
 
             checkRain(user.lat,user.lng,i).then(function(value){
                 var insideuser = users[value.iu];
-console.log("check user",insideuser.name);
 
                 var isBlackout = true;
                 var now = moment();
                 var lowerLimit = moment().hour(insideuser.whitelist[0].begin.hour).minute(insideuser.whitelist[0].begin.minute).second(0);
                 var upperLimit = moment().hour(insideuser.whitelist[0].end.hour).minute(insideuser.whitelist[0].end.minute).second(0);
+console.log("check user",insideuser.name,now.format());
                 if ( now.isAfter(lowerLimit) ) {
-                  console.log("after lowerLimit");
+                  console.log(insideuser.name," after lowerLimit");
                 }
                 if ( now.isBefore(upperLimit) ) {
-                  console.log("before upperLimit");
+                  console.log(insideuser.name," before upperLimit");
                 }
                 if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) {
                   isBlackout = false;
