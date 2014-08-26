@@ -244,7 +244,7 @@ var willRain = function (candidate, level) {
         case 1:
             var willrain = false;
             var minutelyData = candidate.minutely.data;
-            for ( var i = 0; i < 20; i++ ) {
+            for ( var i = 0; i < 25; i++ ) {
                 var intensity = minutelyData[i].precipIntensity - minutelyData[i].precipIntensityError;
                 var probability = minutelyData[i].precipProbability;
                 // console.log("intensity",intensity);
