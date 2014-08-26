@@ -233,7 +233,7 @@ console.log("check user",insideuser.name,now.format());
     });
 };
 
-setTimeout(checkAndSend, 2000);
+setTimeout(checkAndSend, 3000);
 var timeoutId = setInterval(checkAndSend, 3*60*1000);
 
 /* =================================================================================================== */
