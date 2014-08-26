@@ -270,8 +270,6 @@ var oneRequest = function (lat, lng) {
     var deferred = q.defer();
     var forecastbase = "https://api.forecast.io/forecast/";
     var key = "91ac025a6fe778dbe3a41cf7748b55d1";
-    // Windsorish 41.919012,-83.387947
-    //  var opts = "/43.654,-79.423,1370495580?units=ca";
     var opts = "/" + lat + "," + lng + "?units=ca";
     var requrl = forecastbase + key + opts;
     console.log(requrl);
