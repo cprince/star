@@ -141,9 +141,45 @@ var sendSms = function (dest, message, timeformatted) {
   });
 }
 
+
+var Twit = require('twit')
+var T = new Twit({
+        consumer_key:         'FjGvJFP1vIB3TBzDMlbTDvm8Q'
+      , consumer_secret:      'mx7Tx9zVcigmpbgM6p5kxDH8xgoymPFLwgYhMlxySoDGQr9wVf'
+      , access_token:         '2764572067-Kvkupk8rrLAJd4vZMNwu5HI71aWam4o85DyOF1a'
+      , access_token_secret:  'Fomsauz1VZJQu3qNdz505h11P1ANDbAneFSJAGBwp1gg8'
+})
+
+var sendTweet = function (message,timeformatted) {
+  var bodymsg = 'Rain in the park '+timeformatted+' '+message;
+  T.post('statuses/update', { status: bodymsg }, function(err, data, response) {
+    if (err) console.log(err);
+    if (data) console.log(data);
+  })
+}
+
+/* =================================================================================================== */
+
+/* ===== global var ? ===== */
+var twitUser = {
+  lastNotification: -1,
+  lat: 43.656486,
+  lng: -79.43237
+};
+
 /* =================================================================================================== */
 
 var checkAndSend = function () {
+    var epochTime = Math.floor(new Date().getTime()/1000);
+    var timeformatted = new Date().toLocaleTimeString();
+    if ( epochTime - twitUser.lastNotification > 2*60*60 ) { // check if over 2 hours
+      checkRain(twitUser.lat,twitUser.lng,1).then(function(value) {
+        if ( value.willrain ) {
+            sendTweet(value.longSummary,timeformatted);
+            twitUser.lastNotification = value.time;
+        }
+      });
+    }
     getUsers().then(function(users){
         var i=0;
         for(i=0;i<users.length; i++){
@@ -158,27 +194,16 @@ var checkAndSend = function () {
                 var lowerLimit = moment().hour(insideuser.whitelist[0].begin.hour).minute(insideuser.whitelist[0].begin.minute).second(0);
                 var upperLimit = moment().hour(insideuser.whitelist[0].end.hour).minute(insideuser.whitelist[0].end.minute).second(0);
 console.log("check user",insideuser.name,now.format());
-                if ( now.isAfter(lowerLimit) ) {
-                  console.log(insideuser.name," after lowerLimit");
-                }
-                if ( now.isBefore(upperLimit) ) {
-                  console.log(insideuser.name," before upperLimit");
-                }
                 if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) {
                   isBlackout = false;
                 }
-                var epochTime = Math.floor(new Date().getTime()/1000);
 
-                var timeformatted = new Date().toLocaleTimeString();
                 var uuidstring = uuid.v4();
                 var subject = '[wpush] Rain is on the way ' + timeformatted + ' ' + value.summary;
                 var body = JSON.stringify(value);
                 var shouldsend = false;
                 if ( value.willrain ) {
                   if ( !isBlackout ) {
-console.log("epochTime", epochTime);
-console.log("insideuser.lastNotification",insideuser.lastNotification);
-console.log("difference is",epochTime - insideuser.lastNotification);
                     if ( insideuser.sms ) {
                       if ( epochTime - insideuser.lastNotification > 4*60*60 ) { // notify if over 4 hours
                         sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
