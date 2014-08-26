@@ -172,6 +172,8 @@ var twitUser = {
 var checkAndSend = function () {
     var epochTime = Math.floor(new Date().getTime()/1000);
     var timeformatted = new Date().toLocaleTimeString();
+
+console.log("twitter user",timeformatted);
     if ( epochTime - twitUser.lastNotification > 2*60*60 ) { // check if over 2 hours
       checkRain(twitUser.lat,twitUser.lng,1).then(function(value) {
         if ( value.willrain ) {
