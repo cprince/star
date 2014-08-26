@@ -173,7 +173,7 @@ var checkAndSend = function () {
     var epochTime = Math.floor(new Date().getTime()/1000);
     var timeformatted = new Date().toLocaleTimeString();
 
-console.log("twitter user",timeformatted);
+console.log("twitter user Dufferin Rain",timeformatted);
     if ( epochTime - twitUser.lastNotification > 2*60*60 ) { // check if over 2 hours
       checkRain(twitUser.lat,twitUser.lng,1).then(function(value) {
         if ( value.willrain ) {
@@ -247,8 +247,6 @@ var willRain = function (candidate, level) {
             for ( var i = 0; i < 25; i++ ) {
                 var intensity = minutelyData[i].precipIntensity - minutelyData[i].precipIntensityError;
                 var probability = minutelyData[i].precipProbability;
-                // console.log("intensity",intensity);
-                // console.log("probability",probability);
                 if ( (intensity > 0.6) && (probability > 0.5) ) {
                     console.log("yes!");
                     willrain = true;
