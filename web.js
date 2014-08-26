@@ -191,13 +191,13 @@ console.log("twitter user Dufferin Rain",timeformatted);
             checkRain(user.lat,user.lng,i).then(function(value){
                 var insideuser = users[value.iu];
 
-                var isBlackout = true;
+                var isWhiteTime = false;
                 var now = moment();
                 var lowerLimit = moment().hour(insideuser.whitelist[0].begin.hour).minute(insideuser.whitelist[0].begin.minute).second(0);
                 var upperLimit = moment().hour(insideuser.whitelist[0].end.hour).minute(insideuser.whitelist[0].end.minute).second(0);
 console.log("check user",insideuser.name,now.format());
                 if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) {
-                  isBlackout = false;
+                  isWhiteTime = true;
                 }
 
                 var uuidstring = uuid.v4();
@@ -205,14 +205,14 @@ console.log("check user",insideuser.name,now.format());
                 var body = JSON.stringify(value);
                 var shouldsend = false;
                 if ( value.willrain ) {
-                  if ( !isBlackout ) {
+                  if ( isWhiteTime ) {
                     if ( insideuser.sms ) {
                       if ( epochTime - insideuser.lastNotification > 4*60*60 ) { // notify if over 4 hours
                         sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
                         updateUserLastNotification(insideuser.email,value.time);
                       }
                     }
-                  }
+                  } // end is white time
                   if ( 1==0 ) { // disable for now
                   mailserver.send({
                      text:    body,
