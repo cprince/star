@@ -277,7 +277,7 @@ var oneRequest = function (lat, lng) {
         deferred.resolve(details);
       } else {
         var code = "[Empty]";
-        if (typeof response.statusCode !== "undefined") code = response.statusCode;
+        if (typeof response !== "undefined") code = response.statusCode;
         deferred.reject( { statusMessage: "oops something didn't work", statusCode: code } );
       }
     })
