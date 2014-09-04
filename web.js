@@ -139,8 +139,25 @@ var sendSms = function (dest, message, timeformatted) {
           console.log('Oops! There was an error.');
       }
   });
-}
+};
 
+var sendEmail = function (insideuser, timeformatted) {
+    var uuidstring = uuid.v4();
+    var subject = '[wpush] Rain is on the way ' + timeformatted + ' ' + value.summary;
+    var body = JSON.stringify(value);
+    mailserver.send({
+       text:    body,
+       from:    "Wpush Service <col@colinprince.com>",
+       to:      insideuser.email,
+       subject: subject,
+       attachment: [
+            { data: '<html><h1>Wpush Service</h1><p>Rain is on the way soon. '+value.longSummary+'.</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
+      ]
+    }, function(err, message) {
+            console.log(err || message);
+            addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "email": insideuser.email, "context": body } );
+        });
+};
 
 var Twit = require('twit')
 var T = new Twit({
@@ -202,11 +219,6 @@ console.log("check user",user.name,now.format());
               checkRain(user.lat,user.lng,i).then(function(value){
                   var insideuser = users[value.iu];
 
-
-                  var uuidstring = uuid.v4();
-                  var subject = '[wpush] Rain is on the way ' + timeformatted + ' ' + value.summary;
-                  var body = JSON.stringify(value);
-                  var shouldsend = false;
                   if ( value.willrain ) {
                       if ( insideuser.sms ) {
                         if ( epochTime - insideuser.lastNotification > 4*60*60 ) { // notify if over 4 hours
@@ -215,18 +227,7 @@ console.log("check user",user.name,now.format());
                         }
                       }
                     if ( 1==0 ) { // disable for now
-                    mailserver.send({
-                       text:    body,
-                       from:    "Wpush Service <col@colinprince.com>",
-                       to:      insideuser.email,
-                       subject: subject,
-                       attachment: [
-                            { data: '<html><h1>Wpush Service</h1><p>Rain is on the way soon. '+value.longSummary+'.</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
-                      ]
-                    }, function(err, message) {
-                            console.log(err || message);
-                            addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "email": insideuser.email, "context": body } );
-                        });
+                      sendEmail(insideuser,timeformatted);
                     } // end stop mailsend
                   }
               });
