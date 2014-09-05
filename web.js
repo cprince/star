@@ -199,6 +199,7 @@ console.log("twitter user Dufferin Rain",timeformatted);
         }
       });
     }
+
     getUsers().then(function(users){
         var i=0;
         for(i=0;i<users.length; i++){
@@ -215,7 +216,7 @@ console.log("check user",user.name,now.format());
             }
 
             if ( isWhiteTime ) {
-              if ( epochTime - insideuser.lastNotification > 4*60*60 ) { // notify if over 4 hours
+              if ( epochTime - user.lastNotification > 4*60*60 ) { // notify if over 4 hours
                 checkRain(user.lat,user.lng,i).then(function(value){
                   var insideuser = users[value.iu];
 
@@ -231,7 +232,6 @@ console.log("check user",user.name,now.format());
                 }); // end checkRain call
               } // end if over 4 hours
             } // end is white time
-
         }
     });
 };
