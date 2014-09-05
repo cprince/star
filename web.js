@@ -215,23 +215,21 @@ console.log("check user",user.name,now.format());
             }
 
             if ( isWhiteTime ) {
-
-              checkRain(user.lat,user.lng,i).then(function(value){
+              if ( epochTime - insideuser.lastNotification > 4*60*60 ) { // notify if over 4 hours
+                checkRain(user.lat,user.lng,i).then(function(value){
                   var insideuser = users[value.iu];
 
                   if ( value.willrain ) {
                       if ( insideuser.sms ) {
-                        if ( epochTime - insideuser.lastNotification > 4*60*60 ) { // notify if over 4 hours
-                          sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
-                          updateUserLastNotification(insideuser.email,value.time);
-                        }
+                        sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
+                        updateUserLastNotification(insideuser.email,value.time);
                       }
                     if ( 1==0 ) { // disable for now
                       sendEmail(insideuser,timeformatted);
-                    } // end stop mailsend
+                    }
                   }
-              });
-
+                }); // end checkRain call
+              } // end if over 4 hours
             } // end is white time
 
         }
