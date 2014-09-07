@@ -168,7 +168,7 @@ var T = new Twit({
 })
 
 var sendTweet = function (message,timeformatted) {
-  var bodymsg = 'Rain in the park '+timeformatted+' '+message;
+  var bodymsg = message+' ['+timeformatted+']';
   T.post('statuses/update', { status: bodymsg, trim_user: true }, function(err, data, response) {
     if (err) console.log(err);
     if (data) console.log(data);
