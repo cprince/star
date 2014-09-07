@@ -125,7 +125,7 @@ var getUsers = function() {
 };
 
 var sendSms = function (dest, message, timeformatted) {
-  var bodymsg = 'Rain is coming. '+message+' '+timeformatted
+  var bodymsg = message+' ['+timeformatted+']';
   client.sms.messages.create({
       to: dest,
       from: '+12048134333',
