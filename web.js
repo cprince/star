@@ -18,6 +18,8 @@ var uuid = require('node-uuid');
 var twilio = require('twilio');
 var client = new twilio.RestClient('AC41caac4d1dbae887c881215f4b2e8c13', 'b702ec1d72212e8d9ab0a755e14100ca');
 
+var api = require("./modules/api.js");
+
 var updateUserLastNotification = function(useremail, time) {
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
         if(err) throw err;
@@ -155,7 +157,7 @@ var sendEmail = function (insideuser, timeformatted) {
       ]
     }, function(err, message) {
             console.log(err || message);
-            addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "email": insideuser.email, "context": body } );
+            api.addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "email": insideuser.email, "context": body } );
         });
 };
 
@@ -200,7 +202,7 @@ console.log("twitter user Dufferin Rain",timeformatted);
       });
     }
 
-    getUsers().then(function(users){
+    api.getUsers().then(function(users){
         var i=0;
         for(i=0;i<users.length; i++){
             var user = users[i];
@@ -223,7 +225,7 @@ console.log("check user",user.name,now.format());
                   if ( value.willrain ) {
                       if ( insideuser.sms ) {
                         sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
-                        updateUserLastNotification(insideuser.email,value.time);
+                        api.updateUserLastNotification(insideuser.email,value.time);
                       }
                     if ( 1==0 ) { // disable for now
                       sendEmail(insideuser,timeformatted);
@@ -387,7 +389,8 @@ app.post('/users', function(req, response){
 
 var port = process.env.PORT || 5000;
 
-app.listen(port, function() {
-    console.log("Listening on " + port);
-});
+//app.listen(port, function() {
+//    console.log("Listening on " + port);
+//});
 
+api.start();

@@ -172,7 +172,13 @@ app.post('/users', function(req, response){
 
 var port = process.env.PORT || 5000;
 
-app.listen(port, function() {
-    console.log("Listening on " + port);
-});
+function start() {
+  app.listen(port, function() {
+      console.log("Whee Listening on " + port);
+  });
+}
 
+exports.start = start;
+exports.getUsers = getUsers;
+exports.updateUserLastNotification = updateUserLastNotification;
+exports.addNotification = addNotification;
