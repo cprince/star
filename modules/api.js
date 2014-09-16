@@ -8,6 +8,8 @@ app.use(express.bodyParser());
 app.use(express.logger());
 var moment = require("moment-timezone");
 
+var weather = require("./weather");
+
 var updateUserLastNotification = function(useremail, time) {
     mongoClient.connect('mongodb://127.0.0.1:27017/star',function(err, db){
         if(err) throw err;
@@ -101,7 +103,7 @@ var getUsers = function() {
 app.get('/rain/:lat,:lng', function(req, response) {
     var lat = req.param('lat'),
         lng = req.param('lng');
-    checkRain(lat,lng).then(function(value){
+    weather.checkRain(lat,lng).then(function(value){
         response.json(value);
     });
 });
