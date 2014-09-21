@@ -26,9 +26,8 @@ var sendSms = function (dest, message, timeformatted) {
       body: bodymsg
   }, function(error, message) {
       if (!error) {
-          console.log('Success! The SID for this SMS message is:', message.sid);
-          console.log('Message:', bodymsg);
-          console.log('Message sent:', message.dateCreated, 'to:', dest);
+          console.log('SMS Message:', bodymsg);
+          console.log('SMS Message sent:', message.dateCreated, 'to:', dest);
       } else {
           console.log('Oops! There was an error.');
       }
