@@ -1,11 +1,4 @@
-var express = require("express");
-var request = require("request");
 var q = require("q");
-var mongodb = require("mongodb");
-var mongoClient = mongodb.MongoClient;
-var app = express();
-app.use(express.bodyParser());
-app.use(express.logger());
 var email   = require("emailjs/email");
 var mailserver  = email.server.connect({
     user:    "col@colinprince.com",
