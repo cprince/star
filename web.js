@@ -9,10 +9,12 @@ var mailserver  = email.server.connect({
 var moment = require("moment-timezone");
 var uuid = require('node-uuid');
 var twilio = require('twilio');
-var client = new twilio.RestClient('AC41caac4d1dbae887c881215f4b2e8c13', 'b702ec1d72212e8d9ab0a755e14100ca');
 
+var twilioconfig = require('./config/twilioconfig.js');
 var weather = require("./modules/weather.js");
 var api = require("./modules/api.js");
+
+var client = new twilio.RestClient(twilioconfig.accountid, twilioconfig.authtoken);
 
 api.start();
 
@@ -22,7 +24,7 @@ var sendSms = function (dest, message, timeformatted) {
   var bodymsg = message+' ['+timeformatted+']';
   client.sms.messages.create({
       to: dest,
-      from: '+12048134333',
+      from: twilioconfig.number,
       body: bodymsg
   }, function(error, message) {
       if (!error) {
