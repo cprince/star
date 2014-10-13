@@ -98,36 +98,45 @@ console.log("twitter user Dufferin Rain",timeformatted);
   }
 
   api.getUsers().then(function(users){
+    var numUsers = users.length;
+    var variance = Math.floor ( checkInterval / numUsers+1 );
+    var offset = [0]; // initialize first time offset at zero
+    for ( var j = 0; j < numUsers; j++ ) {
+      offset[j+1] = offset[j] + variance;
+    }
+
     var i=0;
-    for (i=0; i<users.length; i++) {
+    for ( i=0; i<numUsers; i++ ) {
       if ( !users[i].enabled ) continue;
       (function(i) {
-        var user = users[i];
+        setTimeout(function() {
+          var user = users[i];
 
-        var now = moment();
+          var now = moment();
 console.log("check user",user.name,now.format());
-        var isWhiteTime = false;
-        var lowerLimit = moment().hour(user.whitelist[0].begin.hour).minute(user.whitelist[0].begin.minute).second(0);
-        var upperLimit = moment().hour(user.whitelist[0].end.hour).minute(user.whitelist[0].end.minute).second(0);
-        if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) {
-          isWhiteTime = true;
-        }
+          var isWhiteTime = false;
+          var lowerLimit = moment().hour(user.whitelist[0].begin.hour).minute(user.whitelist[0].begin.minute).second(0);
+          var upperLimit = moment().hour(user.whitelist[0].end.hour).minute(user.whitelist[0].end.minute).second(0);
+          if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) {
+            isWhiteTime = true;
+          }
 
-        if ( isWhiteTime ) {
-          if ( epochTime - user.lastNotification > 4*60*60 ) { // notify if over 4 hours
-            weather.checkRain(user.lat,user.lng).then(function(value){
-              if ( value.willrain ) {
-                if ( user.sms ) {
-                  sendSms(user.smsnumber, value.longSummary, timeformatted);
-                  api.updateUserLastNotification(user.email,value.time);
+          if ( isWhiteTime ) {
+            if ( epochTime - user.lastNotification > 4*60*60 ) { // notify if over 4 hours
+              weather.checkRain(user.lat,user.lng).then(function(value){
+                if ( value.willrain ) {
+                  if ( user.sms ) {
+                    sendSms(user.smsnumber, value.longSummary, timeformatted);
+                    api.updateUserLastNotification(user.email,value.time);
+                  }
+                  if ( 1==0 ) { // disable for now
+                    sendEmail(user,timeformatted);
+                  }
                 }
-                if ( 1==0 ) { // disable for now
-                  sendEmail(user,timeformatted);
-                }
-              }
-            }); // end checkRain call
-          } // end if over 4 hours
-        } // end is white time
+              }); // end checkRain call
+            } // end if over 4 hours
+          } // end is white time
+        }, offset[i]);
       })(i); // immediately-invoked function expression
     } // end for loop
   }); // end getUsers()
