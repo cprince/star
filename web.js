@@ -116,15 +116,16 @@ console.log("check user",user.name,now.format());
         if ( isWhiteTime ) {
           if ( epochTime - user.lastNotification > 4*60*60 ) { // notify if over 4 hours
             weather.checkRain(user.lat,user.lng,i).then(function(value){
-              var insideuser = users[value.iu];
+              //var insideuser = users[value.i];
+              var insideuser = user;
 
               if ( value.willrain ) {
-                if ( insideuser.sms ) {
-                  sendSms(insideuser.smsnumber, value.longSummary, timeformatted);
-                  api.updateUserLastNotification(insideuser.email,value.time);
+                if ( user.sms ) {
+                  sendSms(user.smsnumber, value.longSummary, timeformatted);
+                  api.updateUserLastNotification(user.email,value.time);
                 }
                 if ( 1==0 ) { // disable for now
-                  sendEmail(insideuser,timeformatted);
+                  sendEmail(user,timeformatted);
                 }
               }
             }); // end checkRain call
