@@ -89,7 +89,7 @@ var checkAndSend = function () {
 
 console.log("twitter user Dufferin Rain",timeformatted);
   if ( epochTime - twitUser.lastNotification > 2*60*60 ) { // check if over 2 hours
-    weather.checkRain(twitUser.lat,twitUser.lng,1).then(function(value) {
+    weather.checkRain(twitUser.lat,twitUser.lng).then(function(value) {
       if ( value.willrain ) {
         sendTweet(value.longSummary,timeformatted);
         twitUser.lastNotification = value.time;
@@ -115,10 +115,7 @@ console.log("check user",user.name,now.format());
 
         if ( isWhiteTime ) {
           if ( epochTime - user.lastNotification > 4*60*60 ) { // notify if over 4 hours
-            weather.checkRain(user.lat,user.lng,i).then(function(value){
-              //var insideuser = users[value.i];
-              var insideuser = user;
-
+            weather.checkRain(user.lat,user.lng).then(function(value){
               if ( value.willrain ) {
                 if ( user.sms ) {
                   sendSms(user.smsnumber, value.longSummary, timeformatted);
