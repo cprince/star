@@ -47,7 +47,7 @@ var oneRequest = function (lat, lng) {
     return deferred.promise;
 };
 
-var checkRain = function (lat, lng, iu) {
+var checkRain = function (lat, lng) {
     var deferred = q.defer();
     oneRequest(lat,lng).then(function(details){
         var willrain = false;
@@ -55,7 +55,6 @@ var checkRain = function (lat, lng, iu) {
             willrain = true;
         }
         deferred.resolve({
-                        iu: iu,
                         precipIntensity: details.currently.precipIntensity,
                         precipProbability: details.currently.precipProbability,
                         willrain: willrain,
