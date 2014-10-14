@@ -22,8 +22,9 @@ api.start();
 
 /* =================================================================================================== */
 
-var sendSms = function (dest, message, timeformatted) {
-  var bodymsg = message+' ['+timeformatted+']';
+var sendSms = function (dest, message) {
+  var timeformatted = new Date().toLocaleTimeString();
+  var bodymsg = message+' '+timeformatted;
   client.sms.messages.create({
       to: dest,
       from: twilioconfig.number,
@@ -64,8 +65,9 @@ var T = new Twit({
       , access_token_secret:  'Fomsauz1VZJQu3qNdz505h11P1ANDbAneFSJAGBwp1gg8'
 })
 
-var sendTweet = function (message,timeformatted) {
-  var bodymsg = message+' ['+timeformatted+']';
+var sendTweet = function (message) {
+  var timeformatted = new Date().toLocaleTimeString();
+  var bodymsg = message+' '+timeformatted;
   T.post('statuses/update', { status: bodymsg, trim_user: true }, function(err, data, response) {
     if (err) console.log(err);
     if (data) console.log(data);
@@ -91,7 +93,7 @@ console.log("twitter user Dufferin Rain",timeformatted);
   if ( epochTime - twitUser.lastNotification > 2*60*60 ) { // check if over 2 hours
     weather.checkRain(twitUser.lat,twitUser.lng).then(function(value) {
       if ( value.willrain ) {
-        sendTweet(value.longSummary,timeformatted);
+        sendTweet(value.longSummary);
         twitUser.lastNotification = value.time;
       }
     });
@@ -126,11 +128,11 @@ console.log("check user",user.name,now.format());
               weather.checkRain(user.lat,user.lng).then(function(value){
                 if ( value.willrain ) {
                   if ( user.sms ) {
-                    sendSms(user.smsnumber, value.longSummary, timeformatted);
+                    sendSms(user.smsnumber, value.longSummary);
                     api.updateUserLastNotification(user.email,value.time);
                   }
                   if ( 1==0 ) { // disable for now
-                    sendEmail(user,timeformatted);
+                    sendEmail(user);
                   }
                 }
               }); // end checkRain call
