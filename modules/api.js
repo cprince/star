@@ -100,17 +100,20 @@ var getUsers = function() {
 
 /* =================================================================================================== */
 
+app.get('/', function(req, response) {
+    response.sendfile('htdocs/index.html');
+});
+
+app.get('/sms/reply', function(req, response) {
+    response.sendfile('htdocs/smsreply.xml');
+});
+
 app.get('/rain/:lat,:lng', function(req, response) {
     var lat = req.param('lat'),
         lng = req.param('lng');
     weather.checkRain(lat,lng).then(function(value){
         response.json(value);
     });
-});
-
-app.get('/', function(req, response) {
-
-    response.sendfile('htdocs/index.html');
 });
 
 app.get('/users', function(req, response) {
@@ -176,7 +179,7 @@ var port = process.env.PORT || 5000;
 
 function start() {
   app.listen(port, function() {
-      console.log("Whee Listening on " + port);
+      console.log("API listening on port " + port);
   });
 }
 
