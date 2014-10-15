@@ -22,7 +22,7 @@ api.start();
 
 /* =================================================================================================== */
 
-var sendSms = function (dest, message) {
+var sendSms = function (dest, message, usermsg) {
   var timeformatted = new Date().toLocaleTimeString();
   var bodymsg = message+' '+timeformatted;
   client.sms.messages.create({
@@ -32,7 +32,7 @@ var sendSms = function (dest, message) {
   }, function(error, message) {
       if (!error) {
           console.log('SMS Message:', bodymsg);
-          console.log('SMS Message sent:', message.dateCreated, 'to:', dest);
+          console.log('SMS Message sent:', message.dateCreated, 'to:', dest, usermsg);
       } else {
           console.log('Oops! There was an error.');
       }
@@ -128,7 +128,7 @@ console.log("check user",user.name,now.format());
               weather.checkRain(user.lat,user.lng).then(function(value){
                 if ( value.willrain ) {
                   if ( user.sms ) {
-                    sendSms(user.smsnumber, value.longSummary);
+                    sendSms(user.smsnumber, value.longSummary, user.name);
                     api.updateUserLastNotification(user.email,value.time);
                   }
                   if ( 1==0 ) { // disable for now
