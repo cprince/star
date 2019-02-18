@@ -47,17 +47,33 @@ var oneRequest = function (lat, lng) {
     return deferred.promise;
 };
 
+var addUpAccumulation = function (details) {
+    var ret = 0;
+    var data = details.minutely.data;
+    for (var i = 0; i < data.length; i++) {
+	var precipValue = data[i].precipAccumulation;
+	if (typeof precipValue !== "undefined") {
+	    var value = parseFloat(precipValue);
+	    ret += value;
+	}
+    }
+    return (ret/data.length).toFixed(1);
+};
+
 var checkRain = function (lat, lng) {
     var deferred = q.defer();
     oneRequest(lat,lng).then(function(details){
         var willrain = false;
+	var precipAccumulation = 0;
         if (willRain(details,1)) {
             willrain = true;
+            precipAccumulation = addUpAccumulation(details);
         }
         deferred.resolve({
                         precipIntensity: details.currently.precipIntensity,
                         precipProbability: details.currently.precipProbability,
                         willrain: willrain,
+			precipAccumulation: precipAccumulation,
                         summary: details.currently.summary,
                         longSummary: details.minutely.summary,
                         latitude: details.latitude,

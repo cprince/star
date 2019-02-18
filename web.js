@@ -14,7 +14,7 @@ var twilioconfig = require('./config/twilioconfig.js');
 var weather = require("./modules/weather.js");
 var api = require("./modules/api.js");
 
-var client = new twilio.RestClient(twilioconfig.accountid, twilioconfig.authtoken);
+var client = new twilio(twilioconfig.accountid, twilioconfig.authtoken);
 
 var checkInterval = 3*60*1000;
 
@@ -22,9 +22,9 @@ api.start();
 
 /* =================================================================================================== */
 
-var sendSms = function (dest, message, usermsg) {
+var sendSms = function (dest, message, precipAccumulation, usermsg) {
   var timeformatted = new Date().toLocaleTimeString();
-  var bodymsg = message+' '+timeformatted;
+  var bodymsg = bodymsg = message+' 60 minute accum '+precipAccumulation+'cm '+timeformatted;
   client.sms.messages.create({
       to: dest,
       from: twilioconfig.number,
@@ -117,8 +117,8 @@ console.log("twitter user Dufferin Rain",timeformatted);
           var now = moment();
 console.log("check user",user.name,now.format());
           var isWhiteTime = false;
-          var lowerLimit = moment().hour(user.whitelist[0].begin.hour).minute(user.whitelist[0].begin.minute).second(0);
-          var upperLimit = moment().hour(user.whitelist[0].end.hour).minute(user.whitelist[0].end.minute).second(0);
+          var lowerLimit = moment().hour(user.beginhour).minute(user.beginminute).second(0);
+          var upperLimit = moment().hour(user.endhour).minute(user.endminute).second(0);
           if ( now.isBefore(upperLimit) && now.isAfter(lowerLimit) ) {
             isWhiteTime = true;
           }
@@ -128,7 +128,7 @@ console.log("check user",user.name,now.format());
               weather.checkRain(user.lat,user.lng).then(function(value){
                 if ( value.willrain ) {
                   if ( user.sms ) {
-                    sendSms(user.smsnumber, value.longSummary, user.name);
+                    sendSms(user.smsnumber, value.longSummary, value.precipAccumulation, user.name);
                     api.updateUserLastNotification(user.email,value.time);
                   }
                   if ( 1==0 ) { // disable for now
