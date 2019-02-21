@@ -25,7 +25,7 @@ api.start();
 var sendSms = function (dest, message, precipAccumulation, usermsg) {
   var timeformatted = new Date().toLocaleTimeString();
   var bodymsg = bodymsg = message+' 60 minute accum '+precipAccumulation+'cm '+timeformatted;
-  client.sms.messages.create({
+  client.messages.create({
       to: dest,
       from: twilioconfig.number,
       body: bodymsg
