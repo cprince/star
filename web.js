@@ -24,7 +24,8 @@ api.start();
 
 var sendSms = function (dest, message, precipAccumulation, usermsg) {
   var timeformatted = new Date().toLocaleTimeString();
-  var bodymsg = bodymsg = message+' 60 minute accum '+precipAccumulation+'cm '+timeformatted;
+  var accumMessage = (precipAccumulation>0.0) ? ' 60 minute accum '+precipAccumulation+'cm ' : ' ';
+  var bodymsg = message+accumMessage+timeformatted;
   client.messages.create({
       to: dest,
       from: twilioconfig.number,
@@ -39,24 +40,6 @@ var sendSms = function (dest, message, precipAccumulation, usermsg) {
   });
 };
 
-var sendEmail = function (insideuser, timeformatted) {
-    var uuidstring = uuid.v4();
-    var subject = '[wpush] Rain is on the way ' + timeformatted + ' ' + value.summary;
-    var body = JSON.stringify(value);
-    mailserver.send({
-       text:    body,
-       from:    "Wpush Service <col@colinprince.com>",
-       to:      insideuser.email,
-       subject: subject,
-       attachment: [
-            { data: '<html><h1>Wpush Service</h1><p>Rain is on the way soon. '+value.longSummary+'.</p><p><a href="http://wpush.colinprince.com/notification/'+uuidstring+'/confirm">[Accurate]</a> <a href="http://wpush.colinprince.com/notification/'+uuidstring+'/reject">[NOT accurate]</a></p><p>'+JSON.stringify(value)+'</p></html>', alternative: true }
-      ]
-    }, function(err, message) {
-            console.log(err || message);
-            api.addNotification( { "date": new Date(), "uuidstring": uuidstring, "message-id": message.header['message-id'], "email": insideuser.email, "context": body } );
-        });
-};
-
 var Twit = require('twit')
 var T = new Twit({
         consumer_key:         'FjGvJFP1vIB3TBzDMlbTDvm8Q'
@@ -65,9 +48,10 @@ var T = new Twit({
       , access_token_secret:  'Fomsauz1VZJQu3qNdz505h11P1ANDbAneFSJAGBwp1gg8'
 })
 
-var sendTweet = function (message) {
+var sendTweet = function (message, precipAccumulation) {
   var timeformatted = new Date().toLocaleTimeString();
-  var bodymsg = message+' '+timeformatted;
+  var accumMessage = (precipAccumulation>0.0) ? ' 60 minute accum '+precipAccumulation+'cm ' : ' ';
+  var bodymsg = message+accumMessage+timeformatted;
   T.post('statuses/update', { status: bodymsg, trim_user: true }, function(err, data, response) {
     if (err) console.log(err);
     if (data) console.log(data);
@@ -93,7 +77,7 @@ console.log("twitter user Dufferin Rain",timeformatted);
   if ( epochTime - twitUser.lastNotification > 2*60*60 ) { // check if over 2 hours
     weather.checkRain(twitUser.lat,twitUser.lng).then(function(value) {
       if ( value.willrain ) {
-        sendTweet(value.longSummary);
+        sendTweet(value.longSummary, value.precipAccumulation);
         twitUser.lastNotification = value.time;
       }
     });
@@ -124,7 +108,7 @@ console.log("check user",user.name,now.format());
           }
 
           if ( isWhiteTime ) {
-            if ( epochTime - user.lastNotification > 4*60*60 ) { // notify if over 4 hours
+            if ( epochTime - user.lastNotification > 2*60*60 ) { // notify if over 2 hours
               weather.checkRain(user.lat,user.lng).then(function(value){
                 if ( value.willrain ) {
                   if ( user.sms ) {
