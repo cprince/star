@@ -74,7 +74,7 @@ var checkAndSend = function () {
   var timeformatted = new Date().toLocaleTimeString();
 
 console.log("twitter user Dufferin Rain",timeformatted);
-  if ( epochTime - twitUser.lastNotification > 2*60*60 ) { // check if over 2 hours
+  if ( epochTime - twitUser.lastNotification > 1*60*60 ) { // check if over 1 hour
     weather.checkRain(twitUser.lat,twitUser.lng).then(function(value) {
       if ( value.willrain ) {
         sendTweet(value.longSummary, value.precipAccumulation);
