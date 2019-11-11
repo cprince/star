@@ -65,13 +65,13 @@ var checkRain = function (lat, lng) {
 	var precipAccumulation = 0;
         if (willRain(details,1)) {
             willrain = true;
-            precipAccumulation = addUpAccumulation(details);
         }
+        precipAccumulation = addUpAccumulation(details);
         deferred.resolve({
                         precipIntensity: details.currently.precipIntensity,
                         precipProbability: details.currently.precipProbability,
                         willrain: willrain,
-			precipAccumulation: precipAccumulation,
+                        precipAccumulation: precipAccumulation,
                         summary: details.currently.summary,
                         longSummary: details.minutely.summary,
                         latitude: details.latitude,
