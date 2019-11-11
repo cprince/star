@@ -49,15 +49,13 @@ var oneRequest = function (lat, lng) {
 
 var addUpAccumulation = function (details) {
     var ret = 0;
-    var data = details.minutely.data;
-    for (var i = 0; i < data.length; i++) {
-	var precipValue = data[i].precipAccumulation;
+	var precipValue = details.hourly.data[0].precipAccumulation;
 	if (typeof precipValue !== "undefined") {
 	    var value = parseFloat(precipValue);
 	    ret += value;
-	}
     }
-    return (ret/data.length).toFixed(1);
+    ret = ret.toFixed(1);
+    return ret;
 };
 
 var checkRain = function (lat, lng) {
@@ -80,7 +78,8 @@ var checkRain = function (lat, lng) {
                         longitude: details.longitude,
                         timezone: details.timezone,
                         time: details.currently.time,
-                        minutely: details.minutely
+                        minutely: details.minutely,
+                        hourly: details.hourly,
                       });
         // addWeather(details);
     });
