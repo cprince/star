@@ -80,6 +80,10 @@ app.get('/stats/json', function(req, response) {
     });
 });
 
+app.get('/current', function(req, response) {
+    response.sendfile('htdocs/current.html');
+});
+
 app.get('/stats', function(req, response) {
     response.sendfile('htdocs/stats.html');
 });
